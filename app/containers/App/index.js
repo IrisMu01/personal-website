@@ -16,7 +16,7 @@ import FeaturePage from 'containers/FeaturePage/Loadable';
 import NotFoundPage from 'containers/NotFoundPage/Loadable';
 import Header from 'components/Header';
 import Footer from 'components/Footer';
-import Particles from 'react-tsparticles';
+import Background from 'components/Background';
 
 import GlobalStyle from '../../global-styles';
 
@@ -34,11 +34,8 @@ const AppWrapper = styled.div`
 export default function App() {
   return (
     <AppWrapper>
-      <Helmet
-        titleTemplate="%s - React.js Boilerplate"
-        defaultTitle="React.js Boilerplate"
-      >
-        <meta name="description" content="A React.js Boilerplate application" />
+      <Helmet titleTemplate="%s - Iris Mu" defaultTitle="Iris Mu">
+        <meta name="description" content="Iris' Personal Website" />
       </Helmet>
       <Header />
       <Switch>
@@ -47,74 +44,7 @@ export default function App() {
         <Route path="" component={NotFoundPage} />
       </Switch>
       <Footer />
-      <Particles
-        id="tsparticles"
-        options={{
-          fpsLimit: 60,
-          backgroundMask: {
-            composite: 'destination-over',
-            cover: {
-              color: {
-                value: '#000000',
-              },
-              opacity: 0.1,
-            },
-            enable: true,
-          },
-          modes: {
-            bubble: {
-              distance: 400,
-              duration: 2,
-              opacity: 0.8,
-              size: 20,
-            },
-            push: {
-              quantity: 4,
-            },
-            repulse: {
-              distance: 200,
-              duration: 0.4,
-            },
-          },
-          particles: {
-            color: {
-              value: ['#c0aef5', '#b0e2ff'],
-            },
-            links: {
-              color: ['#c0aef5', '#b0e2ff'],
-              distance: 150,
-              enable: true,
-              opacity: 0.5,
-              width: 1,
-            },
-            collisions: {
-              enable: true,
-            },
-            move: {
-              direction: 'none',
-              enable: true,
-              outMode: 'bounce',
-              random: true,
-              speed: 0.5,
-              straight: false,
-            },
-            number: {
-              density: {
-                enable: true,
-                value_area: 800,
-              },
-              value: 80,
-            },
-            shape: {
-              type: 'circle',
-            },
-            size: {
-              random: true,
-              value: 4,
-            },
-          },
-        }}
-      />
+      <Background />
       <GlobalStyle />
     </AppWrapper>
   );

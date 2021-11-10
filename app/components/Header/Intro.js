@@ -5,7 +5,7 @@ import NormalH3 from 'components/H3';
 
 const Wrapper = styled.div`
   z-index: 1;
-  width: 100vw;
+  width: 100%;
   height: 300px;
   color: white;
   margin: calc(50vh - 150px) -32px;
@@ -16,9 +16,9 @@ const Wrapper = styled.div`
 `;
 
 const AnimatedWrapper = styled.div`
-  width: 100vw;
+  width: calc(100% + 64px);
   height: 0px;
-  background-color: rgba(255, 255, 255, 0.4);
+  background-color: rgba(255, 255, 255, 0.3);
   margin: 50vh 0;
   animation-delay: 1s;
   animation-duration: 2s;
