@@ -67,11 +67,11 @@ export function MusicProjectsTab({
               </div>
             </AccordionTrigger>
             <AccordionContent className="px-4">
-              <div className="pt-4 flex gap-4">
+              <div className="pt-4 flex flex-col sm:flex-row gap-4">
                 <ImageWithFallback
                   src="https://images.unsplash.com/photo-1507838153414-b4b713384a76?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400"
                   alt="Dimensional Odyssey"
-                  className="w-40 h-40 object-cover rounded-lg flex-shrink-0"
+                  className="w-full sm:w-40 h-40 object-cover rounded-lg flex-shrink-0"
                 />
                 <div className="flex-1 space-y-4">
                   <p className="text-slate-300">
@@ -107,11 +107,11 @@ export function MusicProjectsTab({
               </div>
             </AccordionTrigger>
             <AccordionContent className="px-4">
-              <div className="pt-4 flex gap-4">
+              <div className="pt-4 flex flex-col sm:flex-row gap-4">
                 <ImageWithFallback
                   src="https://images.unsplash.com/photo-1614149162883-504ce4d13909?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400"
                   alt="Void Motifs"
-                  className="w-40 h-40 object-cover rounded-lg flex-shrink-0"
+                  className="w-full sm:w-40 h-40 object-cover rounded-lg flex-shrink-0"
                 />
                 <div className="flex-1 space-y-4">
                   <p className="text-slate-300">
@@ -147,11 +147,11 @@ export function MusicProjectsTab({
               </div>
             </AccordionTrigger>
             <AccordionContent className="px-4">
-              <div className="pt-4 flex gap-4">
+              <div className="pt-4 flex flex-col sm:flex-row gap-4">
                 <ImageWithFallback
                   src="https://images.unsplash.com/photo-1465847899084-d164df4dedc6?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400"
                   alt="Orchestra Practice"
-                  className="w-40 h-40 object-cover rounded-lg flex-shrink-0"
+                  className="w-full sm:w-40 h-40 object-cover rounded-lg flex-shrink-0"
                 />
                 <div className="flex-1 space-y-4">
                   <p className="text-slate-300">
@@ -190,11 +190,11 @@ export function MusicProjectsTab({
               </div>
             </AccordionTrigger>
             <AccordionContent className="px-4">
-              <div className="pt-4 flex gap-4">
+              <div className="pt-4 flex flex-col sm:flex-row gap-4">
                 <ImageWithFallback
                   src="https://images.unsplash.com/photo-1511379938547-c1f69419868d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400"
                   alt="Rebirth in Destruction Reharmonization"
-                  className="w-40 h-40 object-cover rounded-lg flex-shrink-0"
+                  className="w-full sm:w-40 h-40 object-cover rounded-lg flex-shrink-0"
                 />
                 <div className="flex-1 space-y-4">
                   <p className="text-slate-300">
@@ -233,11 +233,11 @@ export function MusicProjectsTab({
               </div>
             </AccordionTrigger>
             <AccordionContent className="px-4">
-              <div className="pt-4 flex gap-4">
+              <div className="pt-4 flex flex-col sm:flex-row gap-4">
                 <ImageWithFallback
                   src="https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400"
                   alt="Weightless Paradise R&B mix"
-                  className="w-40 h-40 object-cover rounded-lg flex-shrink-0"
+                  className="w-full sm:w-40 h-40 object-cover rounded-lg flex-shrink-0"
                 />
                 <div className="flex-1 space-y-4">
                   <p className="text-slate-300">
