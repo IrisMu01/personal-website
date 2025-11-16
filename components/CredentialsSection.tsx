@@ -25,27 +25,31 @@ export function CredentialsSection({ activeTab }: CredentialsSectionProps) {
           />
           
           <div className="flex-1">
-            <h1 className="text-slate-100 mb-2">John Doe</h1>
+            <h1 className="text-slate-100 mb-2">Iris Mu</h1>
             <p className="text-slate-400 mb-4">
               Computer Science & Music Production
             </p>
             <div className="flex gap-4">
               <a
-                href="#"
+                href="https://github.com/IrisMu01"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="text-slate-400 hover:text-slate-100 transition-colors"
                 aria-label="GitHub"
               >
                 <Github className="w-5 h-5" />
               </a>
               <a
-                href="#"
+                href="https://www.linkedin.com/in/iris-mu/"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="text-slate-400 hover:text-slate-100 transition-colors"
                 aria-label="LinkedIn"
               >
                 <Linkedin className="w-5 h-5" />
               </a>
               <a
-                href="#"
+                href="mailto:l5mu@uwaterloo.ca"
                 className="text-slate-400 hover:text-slate-100 transition-colors"
                 aria-label="Email"
               >
