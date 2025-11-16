@@ -3,7 +3,10 @@ export default {
     darkMode: ["class"],
     content: [
       "./index.html",
-      "./**/*.{js,ts,jsx,tsx}",
+      "./src/**/*.{js,ts,jsx,tsx}",
+      "./components/**/*.{js,ts,jsx,tsx}",
+      "./App.tsx",
+      "./main.tsx",
     ],
     theme: {
       extend: {
@@ -69,4 +72,3 @@ export default {
     },
     plugins: [require("tailwindcss-animate")],
   }
-  
