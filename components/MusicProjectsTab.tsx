@@ -6,6 +6,7 @@ import {
   AccordionTrigger,
 } from "./ui/accordion";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
+import AudioPlayer from "react-h5-audio-player";
 
 interface MusicProjectsTabProps {
   isDragging: boolean;
@@ -38,125 +39,214 @@ export function MusicProjectsTab({
         </div>
 
         <Accordion
-          type="single"
-          collapsible
+          type="multiple"
           className="space-y-3"
-          defaultValue="music1"
+          defaultValue={["music1", "music2", "music3", "music4", "music5"]}
         >
+          {/* Dimensional Odyssey */}
           <AccordionItem
             value="music1"
             className="bg-purple-900 rounded-lg border border-purple-800"
           >
             <AccordionTrigger className="hover:no-underline px-4">
-              <div className="flex items-center gap-3">
-                <div className="w-2 h-2 rounded-full bg-pink-500"></div>
-                <span className="text-slate-100">
-                  Electronic EP - "Digital Dreams"
-                </span>
+              <div className="flex items-center gap-3 flex-wrap">
+                <div className="flex items-center gap-3">
+                  <div className="w-2 h-2 rounded-full bg-pink-500"></div>
+                  <span className="text-slate-100">
+                    Dimensional Odyssey
+                  </span>
+                </div>
+                <div className="flex gap-2 flex-wrap">
+                  <span className="px-2 py-0.5 bg-pink-500/20 text-pink-300 rounded-full text-xs">
+                    Hybrid Orchestral
+                  </span>
+                  <span className="px-2 py-0.5 bg-pink-500/20 text-pink-300 rounded-full text-xs">
+                    Cinematic
+                  </span>
+                </div>
               </div>
             </AccordionTrigger>
             <AccordionContent className="px-4">
-              <div className="pt-4 space-y-4">
+              <div className="pt-4 flex gap-4">
                 <ImageWithFallback
-                  src="https://images.unsplash.com/photo-1628452798680-47dcaf5d5e1f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtdXNpYyUyMHN0dWRpbyUyMHByb2R1Y3Rpb258ZW58MXx8fHwxNzYxMjAzNjUxfDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral"
-                  alt="Music studio"
-                  className="w-full h-48 object-cover rounded-lg"
+                  src="https://images.unsplash.com/photo-1507838153414-b4b713384a76?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400"
+                  alt="Dimensional Odyssey"
+                  className="w-40 h-40 object-cover rounded-lg flex-shrink-0"
                 />
-                <p className="text-slate-300">
-                  A 5-track electronic EP exploring the
-                  intersection of ambient and techno.
-                  Produced entirely in Ableton Live with
-                  custom synthesizer patches.
-                </p>
-                <div className="bg-purple-800 p-4 rounded-lg border border-purple-700">
-                  <p className="text-slate-400 text-sm mb-2">
-                    Audio Player Placeholder
+                <div className="flex-1 space-y-4">
+                  <p className="text-slate-300">
+                    An orchestral journey and a practice with fuller ensemble / key modulations, blending jazz orchestra with modern synths and electronic percussion.
                   </p>
-                  <div className="w-full h-12 bg-purple-950 rounded flex items-center justify-center">
-                    <span className="text-slate-500">
-                      ▶ Play Track
-                    </span>
-                  </div>
+                  <AudioPlayer
+                    src="https://pub-18848117928e4ff497abec0a1725d007.r2.dev/piece_1.wav"
+                    className="custom-audio-player"
+                  />
                 </div>
               </div>
             </AccordionContent>
           </AccordionItem>
 
+          {/* Void Motifs */}
           <AccordionItem
             value="music2"
             className="bg-purple-900 rounded-lg border border-purple-800"
           >
             <AccordionTrigger className="hover:no-underline px-4">
-              <div className="flex items-center gap-3">
-                <div className="w-2 h-2 rounded-full bg-purple-500"></div>
-                <span className="text-slate-100">
-                  Film Score - "Midnight City"
-                </span>
+              <div className="flex items-center gap-3 flex-wrap">
+                <div className="flex items-center gap-3">
+                  <div className="w-2 h-2 rounded-full bg-purple-500"></div>
+                  <span className="text-slate-100">
+                    Void Motifs
+                  </span>
+                </div>
+                <div className="flex gap-2 flex-wrap">
+                  <span className="px-2 py-0.5 bg-purple-500/20 text-purple-300 rounded-full text-xs">
+                    Atmospheric Dubstep
+                  </span>
+                </div>
               </div>
             </AccordionTrigger>
             <AccordionContent className="px-4">
-              <div className="pt-4 space-y-4">
+              <div className="pt-4 flex gap-4">
                 <ImageWithFallback
-                  src="https://images.unsplash.com/photo-1522870389523-7e83c0065eaf?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtdXNpY2lhbiUyMGluc3RydW1lbnRzfGVufDF8fHx8MTc2MTI0OTk3M3ww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral"
-                  alt="Musical instruments"
-                  className="w-full h-48 object-cover rounded-lg"
+                  src="https://images.unsplash.com/photo-1614149162883-504ce4d13909?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400"
+                  alt="Void Motifs"
+                  className="w-40 h-40 object-cover rounded-lg flex-shrink-0"
                 />
-                <p className="text-slate-300">
-                  Original score for an independent short
-                  film. Combines orchestral elements with
-                  modern electronic production techniques.
-                </p>
-                <div className="aspect-video bg-purple-800 rounded-lg flex items-center justify-center border border-purple-700">
-                  <p className="text-slate-500">
-                    Film Clip Placeholder
+                <div className="flex-1 space-y-4">
+                  <p className="text-slate-300">
+                    A short ambient piece built around a piano motif, layered with atmospheric dubstep textures and ethereal synths.
                   </p>
+                  <AudioPlayer
+                    src="https://pub-18848117928e4ff497abec0a1725d007.r2.dev/piece_2.wav"
+                    className="custom-audio-player"
+                  />
                 </div>
               </div>
             </AccordionContent>
           </AccordionItem>
 
+          {/* Orchestra Practice */}
           <AccordionItem
             value="music3"
             className="bg-purple-900 rounded-lg border border-purple-800"
           >
             <AccordionTrigger className="hover:no-underline px-4">
-              <div className="flex items-center gap-3">
-                <div className="w-2 h-2 rounded-full bg-blue-500"></div>
-                <span className="text-slate-100">
-                  Lo-fi Hip Hop Collection
-                </span>
+              <div className="flex items-center gap-3 flex-wrap">
+                <div className="flex items-center gap-3">
+                  <div className="w-2 h-2 rounded-full bg-blue-500"></div>
+                  <span className="text-slate-100">
+                    Orchestra Practice
+                  </span>
+                </div>
+                <div className="flex gap-2 flex-wrap">
+                  <span className="px-2 py-0.5 bg-blue-500/20 text-blue-300 rounded-full text-xs">
+                    Classical
+                  </span>
+                </div>
               </div>
             </AccordionTrigger>
             <AccordionContent className="px-4">
-              <div className="pt-4 space-y-4">
-                <p className="text-slate-300">
-                  A collection of chill lo-fi beats perfect
-                  for studying or relaxing. Features warm
-                  analog samples and laid-back drum
-                  patterns.
-                </p>
-                <div className="grid grid-cols-2 gap-2">
-                  <div className="aspect-square bg-purple-800 rounded-lg flex items-center justify-center border border-purple-700">
-                    <p className="text-slate-500 text-sm">
-                      Cover 1
-                    </p>
-                  </div>
-                  <div className="aspect-square bg-purple-800 rounded-lg flex items-center justify-center border border-purple-700">
-                    <p className="text-slate-500 text-sm">
-                      Cover 2
-                    </p>
-                  </div>
+              <div className="pt-4 flex gap-4">
+                <ImageWithFallback
+                  src="https://images.unsplash.com/photo-1465847899084-d164df4dedc6?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400"
+                  alt="Orchestra Practice"
+                  className="w-40 h-40 object-cover rounded-lg flex-shrink-0"
+                />
+                <div className="flex-1 space-y-4">
+                  <p className="text-slate-300">
+                    First time practicing orchestral composition.
+                  </p>
+                  <AudioPlayer
+                    src="https://pub-18848117928e4ff497abec0a1725d007.r2.dev/piece_3.wav"
+                    className="custom-audio-player"
+                  />
+                </div>
+              </div>
+            </AccordionContent>
+          </AccordionItem>
+
+          {/* Rebirth in Destruction Reharmonization */}
+          <AccordionItem
+            value="music4"
+            className="bg-purple-900 rounded-lg border border-purple-800"
+          >
+            <AccordionTrigger className="hover:no-underline px-4">
+              <div className="flex items-center gap-3 flex-wrap">
+                <div className="flex items-center gap-3">
+                  <div className="w-2 h-2 rounded-full bg-indigo-500"></div>
+                  <span className="text-slate-100">
+                    Rebirth in Destruction Reharmonization
+                  </span>
                 </div>
                 <div className="flex gap-2 flex-wrap">
-                  <span className="px-3 py-1 bg-blue-500/20 text-blue-300 rounded-full text-sm">
-                    Lo-fi
+                  <span className="px-2 py-0.5 bg-indigo-500/20 text-indigo-300 rounded-full text-xs">
+                    Jazz
                   </span>
-                  <span className="px-3 py-1 bg-blue-500/20 text-blue-300 rounded-full text-sm">
-                    Hip Hop
+                  <span className="px-2 py-0.5 bg-indigo-500/20 text-indigo-300 rounded-full text-xs">
+                    Game Music
                   </span>
-                  <span className="px-3 py-1 bg-blue-500/20 text-blue-300 rounded-full text-sm">
-                    Instrumental
+                </div>
+              </div>
+            </AccordionTrigger>
+            <AccordionContent className="px-4">
+              <div className="pt-4 flex gap-4">
+                <ImageWithFallback
+                  src="https://images.unsplash.com/photo-1511379938547-c1f69419868d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400"
+                  alt="Rebirth in Destruction Reharmonization"
+                  className="w-40 h-40 object-cover rounded-lg flex-shrink-0"
+                />
+                <div className="flex-1 space-y-4">
+                  <p className="text-slate-300">
+                    A reharmonization of Love and Deepspace's "Rebirth in Destruction" with reimagined chord progressions that offer a more hopeful narrative arc.
+                  </p>
+                  <AudioPlayer
+                    src="https://pub-18848117928e4ff497abec0a1725d007.r2.dev/piece_4.wav"
+                    className="custom-audio-player"
+                  />
+                </div>
+              </div>
+            </AccordionContent>
+          </AccordionItem>
+
+          {/* Weightless Paradise R&B mix */}
+          <AccordionItem
+            value="music5"
+            className="bg-purple-900 rounded-lg border border-purple-800"
+          >
+            <AccordionTrigger className="hover:no-underline px-4">
+              <div className="flex items-center gap-3 flex-wrap">
+                <div className="flex items-center gap-3">
+                  <div className="w-2 h-2 rounded-full bg-cyan-500"></div>
+                  <span className="text-slate-100">
+                    Weightless Paradise R&B mix
                   </span>
+                </div>
+                <div className="flex gap-2 flex-wrap">
+                  <span className="px-2 py-0.5 bg-cyan-500/20 text-cyan-300 rounded-full text-xs">
+                    R&B
+                  </span>
+                  <span className="px-2 py-0.5 bg-cyan-500/20 text-cyan-300 rounded-full text-xs">
+                    Game Music
+                  </span>
+                </div>
+              </div>
+            </AccordionTrigger>
+            <AccordionContent className="px-4">
+              <div className="pt-4 flex gap-4">
+                <ImageWithFallback
+                  src="https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400"
+                  alt="Weightless Paradise R&B mix"
+                  className="w-40 h-40 object-cover rounded-lg flex-shrink-0"
+                />
+                <div className="flex-1 space-y-4">
+                  <p className="text-slate-300">
+                    A smooth R&B reinterpretation of Love and Deepspace's character theme.
+                  </p>
+                  <AudioPlayer
+                    src="https://pub-18848117928e4ff497abec0a1725d007.r2.dev/piece_5.wav"
+                    className="custom-audio-player"
+                  />
                 </div>
               </div>
             </AccordionContent>
