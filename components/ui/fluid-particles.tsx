@@ -247,7 +247,7 @@ export function FluidParticles({ className = "" }: FluidParticlesProps) {
     const gridSize = 64;
     fluidSolverRef.current = new FluidSolver(gridSize, 0.0001, 0.0000001, 0.1);
 
-    // Initialize 8,000 particles
+    // Initialize 30,000 particles
     const particleCount = 30000;
     const maxParticles = 45000; // Maximum particles including spawned ones
     particlesRef.current = [];
@@ -270,7 +270,7 @@ export function FluidParticles({ className = "" }: FluidParticlesProps) {
         const x = Math.floor(Math.random() * gridSize);
         const y = Math.floor(Math.random() * gridSize);
         const strength = (Math.random() - 0.5) * 5;
-        const radius = 10;
+        const radius = (Math.random() * (10 - 5 + 1)) + 5; // random-sized radius
 
         for (let dx = -radius; dx <= radius; dx++) {
           for (let dy = -radius; dy <= radius; dy++) {
@@ -343,9 +343,9 @@ export function FluidParticles({ className = "" }: FluidParticlesProps) {
           particlesToAdd.push({
             x: prevX,
             y: prevY,
-            vx: p.vx * 0.7, // Inherit some velocity
-            vy: p.vy * 0.7,
-            life: Math.random() * 0.3, // Start with low life for fade effect
+            vx: p.vx * 0.8, // Inherit some velocity
+            vy: p.vy * 0.8,
+            life: Math.random() * 0.25, // Start with low life for fade effect
             hue: p.hue + (Math.random() - 0.5) * 10, // Similar hue with variation
           });
         }
@@ -353,19 +353,19 @@ export function FluidParticles({ className = "" }: FluidParticlesProps) {
         // Bounce at boundaries
         if (p.x < 0) {
           p.x = 0;
-          p.vx *= -0.8; // Bounce back with some energy loss
+          p.vx *= -0.5; // Bounce back with some energy loss
         }
         if (p.x > canvas.width) {
           p.x = canvas.width;
-          p.vx *= -0.8;
+          p.vx *= -0.5;
         }
         if (p.y < 0) {
           p.y = 0;
-          p.vy *= -0.8;
+          p.vy *= -0.5;
         }
         if (p.y > canvas.height) {
           p.y = canvas.height;
-          p.vy *= -0.8;
+          p.vy *= -0.5;
         }
 
         // Update life
@@ -377,7 +377,7 @@ export function FluidParticles({ className = "" }: FluidParticlesProps) {
         const baseAlpha = Math.sin(p.life * Math.PI) * 0.6;
         const speedBonus = Math.min(speed * 0.05, 0.3);
         const alpha = baseAlpha + speedBonus;
-        const size = 0.8;
+        const size = 1;
 
         ctx.fillStyle = `hsla(${p.hue}, 80%, 60%, ${alpha})`;
         ctx.beginPath();
