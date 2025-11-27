@@ -25,6 +25,8 @@ export function AudioReactiveParticles({
   const analyserRef = useRef<AnalyserNode | null>(null);
   const dataArrayRef = useRef<Uint8Array | null>(null);
   const audioContextRef = useRef<AudioContext | null>(null);
+  const sourceNodeRef = useRef<MediaElementAudioSourceNode | null>(null);
+  const connectedElementRef = useRef<HTMLAudioElement | null>(null);
   const animationRef = useRef<number>();
 
   // Initialize particles once
@@ -48,33 +50,58 @@ export function AudioReactiveParticles({
 
   // Setup audio analysis when audioElement becomes available
   useEffect(() => {
-    if (!audioElement || audioContextRef.current) return;
+    if (!audioElement) return;
+
+    // If this is the same element we already connected, skip
+    if (audioElement === connectedElementRef.current) return;
 
     try {
-      const audioContext = new (window.AudioContext ||
-        (window as any).webkitAudioContext)();
-      const analyser = audioContext.createAnalyser();
-      analyser.fftSize = 512;
+      // Create audio context if it doesn't exist
+      if (!audioContextRef.current) {
+        const audioContext = new (window.AudioContext ||
+          (window as any).webkitAudioContext)();
+        const analyser = audioContext.createAnalyser();
+        analyser.fftSize = 512;
 
-      const source = audioContext.createMediaElementSource(audioElement);
-      source.connect(analyser);
-      analyser.connect(audioContext.destination);
+        const bufferLength = analyser.frequencyBinCount;
+        const dataArray = new Uint8Array(bufferLength);
 
-      const bufferLength = analyser.frequencyBinCount;
-      const dataArray = new Uint8Array(bufferLength);
+        analyserRef.current = analyser;
+        dataArrayRef.current = dataArray;
+        audioContextRef.current = audioContext;
+      }
 
-      analyserRef.current = analyser;
-      dataArrayRef.current = dataArray;
-      audioContextRef.current = audioContext;
+      // Disconnect previous source if it exists
+      if (sourceNodeRef.current) {
+        try {
+          sourceNodeRef.current.disconnect();
+        } catch (e) {
+          // Ignore disconnect errors
+        }
+      }
+
+      // Create new source for this audio element
+      const source = audioContextRef.current!.createMediaElementSource(audioElement);
+      source.connect(analyserRef.current!);
+      analyserRef.current!.connect(audioContextRef.current!.destination);
+
+      sourceNodeRef.current = source;
+      connectedElementRef.current = audioElement;
     } catch (error) {
       console.error("Error setting up audio analysis:", error);
     }
 
     return () => {
-      if (audioContextRef.current) {
-        audioContextRef.current.close();
-        audioContextRef.current = null;
+      // Don't close audio context on cleanup, only disconnect source
+      if (sourceNodeRef.current) {
+        try {
+          sourceNodeRef.current.disconnect();
+          sourceNodeRef.current = null;
+        } catch (e) {
+          // Ignore disconnect errors
+        }
       }
+      connectedElementRef.current = null;
     };
   }, [audioElement]);
 

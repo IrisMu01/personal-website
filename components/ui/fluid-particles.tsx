@@ -223,8 +223,22 @@ export function FluidParticles({ className = "" }: FluidParticlesProps) {
 
     // Set canvas size
     const resizeCanvas = () => {
+      const oldWidth = canvas.width;
+      const oldHeight = canvas.height;
+
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
+
+      // Scale particle positions if canvas was resized
+      if (oldWidth > 0 && oldHeight > 0 && particlesRef.current.length > 0) {
+        const scaleX = canvas.width / oldWidth;
+        const scaleY = canvas.height / oldHeight;
+
+        particlesRef.current.forEach(p => {
+          p.x *= scaleX;
+          p.y *= scaleY;
+        });
+      }
     };
     resizeCanvas();
     window.addEventListener("resize", resizeCanvas);
@@ -288,8 +302,8 @@ export function FluidParticles({ className = "" }: FluidParticlesProps) {
       const fluid = fluidSolverRef.current;
       if (!fluid) return;
 
-      // Clear with fade
-      ctx.fillStyle = "rgba(0, 0, 0, 0.02)";
+      // Clear with slow fade for longer trails
+      ctx.fillStyle = "rgba(0, 0, 0, 0.008)";
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
       // Mouse interaction - inject velocity when hovering
