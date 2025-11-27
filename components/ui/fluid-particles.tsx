@@ -48,12 +48,12 @@ class FluidSolver {
   }
 
   private initializeRandomFluid() {
-    const numSwirls = 5;
+    const numSwirls = 60;
     for (let i = 0; i < numSwirls; i++) {
       const x = Math.floor(Math.random() * this.size);
       const y = Math.floor(Math.random() * this.size);
       const strength = (Math.random() - 0.5) * 20;
-      const radius = 10;
+      const radius = 5;
 
       for (let dx = -radius; dx <= radius; dx++) {
         for (let dy = -radius; dy <= radius; dy++) {
@@ -233,8 +233,8 @@ export function FluidParticles({ className = "" }: FluidParticlesProps) {
     const gridSize = 64;
     fluidSolverRef.current = new FluidSolver(gridSize, 0.0001, 0.0000001, 0.1);
 
-    // Initialize 10,000 particles
-    const particleCount = 10000;
+    // Initialize 5,000 particles
+    const particleCount = 8000;
     particlesRef.current = [];
     for (let i = 0; i < particleCount; i++) {
       particlesRef.current.push({
@@ -370,7 +370,7 @@ export function FluidParticles({ className = "" }: FluidParticlesProps) {
         const baseAlpha = Math.sin(p.life * Math.PI) * 0.6;
         const speedBonus = Math.min(speed * 0.05, 0.3);
         const alpha = baseAlpha + speedBonus;
-        const size = 5; // Fixed 5px radius
+        const size = 0.5;
 
         ctx.fillStyle = `hsla(${p.hue}, 80%, 60%, ${alpha})`;
         ctx.beginPath();

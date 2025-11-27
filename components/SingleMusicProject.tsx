@@ -50,8 +50,7 @@ export const SingleMusicProject = forwardRef<HTMLAudioElement, SingleMusicProjec
                 className="custom-audio-player-minimal"
                 showJumpControls={true}
                 showSkipControls={false}
-                layout="horizontal"
-                crossOrigin="anonymous"
+                layout="stacked"
               />
             </div>
           </div>
