@@ -27,6 +27,58 @@ export function AudioReactiveParticles({
   const audioContextRef = useRef<AudioContext | null>(null);
   const animationRef = useRef<number>();
 
+  // Initialize particles once
+  useEffect(() => {
+    if (particlesRef.current.length === 0) {
+      const particleCount = 1500;
+      for (let i = 0; i < particleCount; i++) {
+        particlesRef.current.push({
+          angle: Math.random() * Math.PI * 2,
+          speed: 0,
+          distance: 0,
+          life: 0,
+          maxLife: Math.random() * 80 + 40,
+          size: Math.random() * 3 + 1,
+          frequencyBand: Math.floor(Math.random() * 8),
+          hue: Math.random() * 40 + 260, // Purple/pink range: 260-300
+        });
+      }
+    }
+  }, []);
+
+  // Setup audio analysis when audioElement becomes available
+  useEffect(() => {
+    if (!audioElement || audioContextRef.current) return;
+
+    try {
+      const audioContext = new (window.AudioContext ||
+        (window as any).webkitAudioContext)();
+      const analyser = audioContext.createAnalyser();
+      analyser.fftSize = 512;
+
+      const source = audioContext.createMediaElementSource(audioElement);
+      source.connect(analyser);
+      analyser.connect(audioContext.destination);
+
+      const bufferLength = analyser.frequencyBinCount;
+      const dataArray = new Uint8Array(bufferLength);
+
+      analyserRef.current = analyser;
+      dataArrayRef.current = dataArray;
+      audioContextRef.current = audioContext;
+    } catch (error) {
+      console.error("Error setting up audio analysis:", error);
+    }
+
+    return () => {
+      if (audioContextRef.current) {
+        audioContextRef.current.close();
+        audioContextRef.current = null;
+      }
+    };
+  }, [audioElement]);
+
+  // Canvas setup and animation
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -41,44 +93,6 @@ export function AudioReactiveParticles({
     };
     resizeCanvas();
     window.addEventListener("resize", resizeCanvas);
-
-    // Initialize particles
-    const particleCount = 1500;
-    for (let i = 0; i < particleCount; i++) {
-      particlesRef.current.push({
-        angle: Math.random() * Math.PI * 2,
-        speed: 0,
-        distance: 0,
-        life: 0,
-        maxLife: Math.random() * 80 + 40,
-        size: Math.random() * 3 + 1,
-        frequencyBand: Math.floor(Math.random() * 8),
-        hue: Math.random() * 40 + 260, // Purple/pink range: 260-300
-      });
-    }
-
-    // Setup audio analysis
-    if (audioElement) {
-      try {
-        const audioContext = new (window.AudioContext ||
-          (window as any).webkitAudioContext)();
-        const analyser = audioContext.createAnalyser();
-        analyser.fftSize = 512;
-
-        const source = audioContext.createMediaElementSource(audioElement);
-        source.connect(analyser);
-        analyser.connect(audioContext.destination);
-
-        const bufferLength = analyser.frequencyBinCount;
-        const dataArray = new Uint8Array(bufferLength);
-
-        analyserRef.current = analyser;
-        dataArrayRef.current = dataArray;
-        audioContextRef.current = audioContext;
-      } catch (error) {
-        console.error("Error setting up audio analysis:", error);
-      }
-    }
 
     // Animation loop
     const animate = () => {
@@ -191,11 +205,8 @@ export function AudioReactiveParticles({
         cancelAnimationFrame(animationRef.current);
       }
       window.removeEventListener("resize", resizeCanvas);
-      if (audioContextRef.current) {
-        audioContextRef.current.close();
-      }
     };
-  }, [audioElement]);
+  }, []);
 
   return (
     <canvas
