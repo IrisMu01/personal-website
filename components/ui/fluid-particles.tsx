@@ -350,22 +350,14 @@ export function FluidParticles({ className = "" }: FluidParticlesProps) {
           });
         }
 
-        // Bounce at boundaries
-        if (p.x < 0) {
-          p.x = 0;
-          p.vx *= -0.5; // Bounce back with some energy loss
-        }
-        if (p.x > canvas.width) {
-          p.x = canvas.width;
-          p.vx *= -0.5;
-        }
-        if (p.y < 0) {
-          p.y = 0;
-          p.vy *= -0.5;
-        }
-        if (p.y > canvas.height) {
-          p.y = canvas.height;
-          p.vy *= -0.5;
+        // Kill particles at edges and respawn in center
+        if (p.x < 0 || p.x > canvas.width || p.y < 0 || p.y > canvas.height) {
+          // Respawn in center 60% of screen
+          p.x = canvas.width * (0.2 + Math.random() * 0.6);
+          p.y = canvas.height * (0.2 + Math.random() * 0.6);
+          p.vx = 0;
+          p.vy = 0;
+          p.life = Math.random();
         }
 
         // Update life
