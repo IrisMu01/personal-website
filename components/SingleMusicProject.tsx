@@ -1,13 +1,27 @@
 import { MusicProject } from "@/data/projects";
 import AudioPlayer from "react-h5-audio-player";
-import { forwardRef } from "react";
+import { forwardRef, useEffect, useRef } from "react";
 
 interface SingleMusicProjectProps {
   project: MusicProject;
 }
 
 export const SingleMusicProject = forwardRef<HTMLAudioElement, SingleMusicProjectProps>(
-  ({ project }, ref) => {
+  ({ project }, audioRef) => {
+    const playerRef = useRef<AudioPlayer>(null);
+
+    useEffect(() => {
+      // Get the actual audio element from the player and set it to the ref
+      if (playerRef.current && playerRef.current.audio && playerRef.current.audio.current) {
+        const audioElement = playerRef.current.audio.current;
+        if (typeof audioRef === 'function') {
+          audioRef(audioElement);
+        } else if (audioRef) {
+          (audioRef as React.MutableRefObject<HTMLAudioElement | null>).current = audioElement;
+        }
+      }
+    }, [audioRef, project.audioUrl]);
+
     return (
       <div className="fixed inset-0 flex flex-col items-center justify-center z-10 pointer-events-none">
         {/* Center area reserved for audio-reactive particles */}
@@ -31,13 +45,13 @@ export const SingleMusicProject = forwardRef<HTMLAudioElement, SingleMusicProjec
             {/* Audio Player */}
             <div className="bg-black/30 backdrop-blur-md rounded-2xl p-6">
               <AudioPlayer
+                ref={playerRef}
                 src={project.audioUrl}
                 className="custom-audio-player-minimal"
-                customAdditionalControls={[]}
-                customVolumeControls={[]}
-                showJumpControls={false}
+                showJumpControls={true}
+                showSkipControls={false}
                 layout="horizontal"
-                ref={ref}
+                crossOrigin="anonymous"
               />
             </div>
           </div>

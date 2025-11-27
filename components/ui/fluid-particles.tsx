@@ -292,27 +292,41 @@ export function FluidParticles({ className = "" }: FluidParticlesProps) {
       ctx.fillStyle = "rgba(0, 0, 0, 0.02)";
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      // Mouse interaction
+      // Mouse interaction - inject velocity when hovering
       const mouse = mouseRef.current;
-      if (mouse.down || Math.abs(mouse.x - mouse.px) > 0 || Math.abs(mouse.y - mouse.py) > 0) {
-        const dx = mouse.x - mouse.px;
-        const dy = mouse.y - mouse.py;
+      const dx = mouse.x - mouse.px;
+      const dy = mouse.y - mouse.py;
+
+      // Always add some turbulence when mouse is in canvas, even when stationary
+      if (mouse.x > 0 && mouse.x < canvas.width && mouse.y > 0 && mouse.y < canvas.height) {
         const gridX = (mouse.x / canvas.width) * gridSize;
         const gridY = (mouse.y / canvas.height) * gridSize;
 
-        // Add velocity to fluid at mouse position
-        fluid.addVelocity(gridX, gridY, dx * 0.5, dy * 0.5);
+        // Add velocity based on mouse movement
+        if (Math.abs(dx) > 0 || Math.abs(dy) > 0) {
+          fluid.addVelocity(gridX, gridY, dx * 0.5, dy * 0.5);
 
-        // Add velocity in surrounding cells
-        for (let i = -2; i <= 2; i++) {
-          for (let j = -2; j <= 2; j++) {
-            const dist = Math.sqrt(i * i + j * j);
-            if (dist < 3) {
-              const force = (1 - dist / 3);
-              fluid.addVelocity(gridX + i, gridY + j, dx * force * 0.3, dy * force * 0.3);
+          // Add velocity in surrounding cells
+          for (let i = -2; i <= 2; i++) {
+            for (let j = -2; j <= 2; j++) {
+              const dist = Math.sqrt(i * i + j * j);
+              if (dist < 3) {
+                const force = (1 - dist / 3);
+                fluid.addVelocity(gridX + i, gridY + j, dx * force * 0.3, dy * force * 0.3);
+              }
             }
           }
         }
+
+        // Add continuous turbulence when hovering (even without movement)
+        const turbulenceStrength = 0.2;
+        const angle = Date.now() * 0.001;
+        fluid.addVelocity(
+          gridX,
+          gridY,
+          Math.cos(angle) * turbulenceStrength,
+          Math.sin(angle) * turbulenceStrength
+        );
       }
 
       // Step fluid simulation
@@ -336,9 +350,9 @@ export function FluidParticles({ className = "" }: FluidParticlesProps) {
         p.x += p.vx;
         p.y += p.vy;
 
-        // Damping
-        p.vx *= 0.99;
-        p.vy *= 0.99;
+        // Minimal damping to prevent infinite acceleration
+        p.vx *= 0.995;
+        p.vy *= 0.995;
 
         // Wrap around boundaries
         if (p.x < 0) p.x = canvas.width;
@@ -350,10 +364,13 @@ export function FluidParticles({ className = "" }: FluidParticlesProps) {
         p.life += 0.005;
         if (p.life > 1) p.life = 0;
 
-        // Draw particle
+        // Draw particle with fixed size and vibrant colors
         const speed = Math.sqrt(p.vx * p.vx + p.vy * p.vy);
-        const alpha = Math.sin(p.life * Math.PI) * Math.min(speed * 0.1, 0.8);
-        const size = 1 + speed * 0.1;
+        // Base alpha on life cycle, with bonus from speed
+        const baseAlpha = Math.sin(p.life * Math.PI) * 0.6;
+        const speedBonus = Math.min(speed * 0.05, 0.3);
+        const alpha = baseAlpha + speedBonus;
+        const size = 5; // Fixed 5px radius
 
         ctx.fillStyle = `hsla(${p.hue}, 80%, 60%, ${alpha})`;
         ctx.beginPath();
