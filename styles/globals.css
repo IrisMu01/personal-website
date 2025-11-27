@@ -426,44 +426,50 @@ html {
   padding: 0 !important;
 }
 
-/* Horizontal layout with centered controls */
+/* Two-row layout using flex-wrap */
 .custom-audio-player-minimal .rhap_stacked {
   display: flex !important;
-  flex-direction: row !important;
-  align-items: center !important;
-  justify-content: center !important;
-  gap: 1.5rem !important;
-}
-
-/* Main controls centered */
-.custom-audio-player-minimal .rhap_main-controls {
-  display: flex !important;
-  align-items: center !important;
+  flex-wrap: wrap !important;
   gap: 1rem !important;
-  order: 1 !important;
+  align-items: center !important;
 }
 
-/* Progress section to the left of controls */
+/* Progress section - full width on first row */
 .custom-audio-player-minimal .rhap_progress-section {
   display: flex !important;
   align-items: center !important;
   gap: 0.75rem !important;
+  flex-basis: 100% !important;
   order: 0 !important;
-  flex: 1 !important;
-  min-width: 200px !important;
 }
 
-/* Volume controls to the right */
+/* Second row container using remaining space */
+/* Loop button on the very left */
+.custom-audio-player-minimal .rhap_additional-controls {
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.5rem !important;
+  order: 1 !important;
+  flex: 0 0 auto !important;
+}
+
+/* Main controls (play/pause/rewind/forward) centered */
+.custom-audio-player-minimal .rhap_main-controls {
+  display: flex !important;
+  align-items: center !important;
+  gap: 1rem !important;
+  order: 2 !important;
+  flex: 1 1 auto !important;
+  justify-content: center !important;
+}
+
+/* Volume controls on the very right */
 .custom-audio-player-minimal .rhap_volume-controls {
   display: flex !important;
   align-items: center !important;
   gap: 0.5rem !important;
-  order: 2 !important;
-}
-
-/* Hide additional controls (loop button) for minimal design */
-.custom-audio-player-minimal .rhap_additional-controls {
-  display: none !important;
+  order: 3 !important;
+  flex: 0 0 auto !important;
 }
 
 /* Time displays */

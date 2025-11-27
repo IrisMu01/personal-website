@@ -350,11 +350,23 @@ export function FluidParticles({ className = "" }: FluidParticlesProps) {
           });
         }
 
-        // Wrap around boundaries
-        if (p.x < 0) p.x = canvas.width;
-        if (p.x > canvas.width) p.x = 0;
-        if (p.y < 0) p.y = canvas.height;
-        if (p.y > canvas.height) p.y = 0;
+        // Bounce at boundaries
+        if (p.x < 0) {
+          p.x = 0;
+          p.vx *= -0.8; // Bounce back with some energy loss
+        }
+        if (p.x > canvas.width) {
+          p.x = canvas.width;
+          p.vx *= -0.8;
+        }
+        if (p.y < 0) {
+          p.y = 0;
+          p.vy *= -0.8;
+        }
+        if (p.y > canvas.height) {
+          p.y = canvas.height;
+          p.vy *= -0.8;
+        }
 
         // Update life
         p.life += 0.005;
