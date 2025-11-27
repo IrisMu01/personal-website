@@ -35,7 +35,7 @@ export default function App() {
   return (
     <div
       className={`min-h-screen w-full fixed inset-0 transition-colors duration-700 overflow-hidden ${
-        activeTab === "cs" ? "bg-slate-950" : "bg-purple-950"
+        activeTab === "cs" ? "bg-black" : "bg-black"
       }`}
     >
       {/* Particle Background - Different for each tab */}
@@ -47,6 +47,10 @@ export default function App() {
           audioElement={audioRef.current}
         />
       )}
+
+      {/* Gradient overlays for text protection */}
+      <div className="absolute top-0 left-0 right-0 h-48 bg-gradient-to-b from-black to-transparent pointer-events-none z-10" />
+      <div className="absolute bottom-0 left-0 right-0 h-96 bg-gradient-to-t from-black via-black/80 to-transparent pointer-events-none z-10" />
 
       {/* Credentials - Top Left */}
       <CredentialsSection activeTab={activeTab} />

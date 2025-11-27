@@ -26,13 +26,13 @@ export function SingleCSProject({ project }: SingleCSProjectProps) {
         )}
 
         {/* Project Details */}
-        <div className="bg-black/20 backdrop-blur-md rounded-2xl p-8 border border-white/10">
+        <div className="bg-black/30 backdrop-blur-md rounded-2xl p-8">
           {/* Tags */}
           <div className="flex gap-2 flex-wrap mb-6 justify-center">
             {project.tags.map((tag, index) => (
               <span
                 key={index}
-                className="px-4 py-1.5 bg-cyan-500/10 text-cyan-300 rounded-full text-sm border border-cyan-500/20"
+                className="px-4 py-1.5 bg-cyan-500/10 text-cyan-300 rounded-full text-sm"
               >
                 {tag}
               </span>
@@ -42,7 +42,7 @@ export function SingleCSProject({ project }: SingleCSProjectProps) {
           {/* Description */}
           <div className="space-y-3">
             {project.description.map((paragraph, index) => (
-              <p key={index} className="text-white/70 text-center leading-relaxed">
+              <p key={index} className="text-white/80 text-center leading-relaxed">
                 {paragraph}
               </p>
             ))}

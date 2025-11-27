@@ -21,7 +21,7 @@ export const SingleMusicProject = forwardRef<HTMLAudioElement, SingleMusicProjec
               {project.tags.map((tag, index) => (
                 <span
                   key={index}
-                  className="px-4 py-1.5 bg-purple-500/10 text-purple-300 rounded-full text-sm border border-purple-500/20"
+                  className="px-4 py-1.5 bg-purple-500/10 text-purple-300 rounded-full text-sm"
                 >
                   {tag}
                 </span>
@@ -29,7 +29,7 @@ export const SingleMusicProject = forwardRef<HTMLAudioElement, SingleMusicProjec
             </div>
 
             {/* Audio Player */}
-            <div className="bg-black/20 backdrop-blur-md rounded-2xl p-6 border border-white/10">
+            <div className="bg-black/30 backdrop-blur-md rounded-2xl p-6">
               <AudioPlayer
                 src={project.audioUrl}
                 className="custom-audio-player-minimal"
