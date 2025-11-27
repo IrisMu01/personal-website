@@ -248,8 +248,8 @@ export function FluidParticles({ className = "" }: FluidParticlesProps) {
     fluidSolverRef.current = new FluidSolver(gridSize, 0.0001, 0.0000001, 0.1);
 
     // Initialize 8,000 particles
-    const particleCount = 8000;
-    const maxParticles = 12000; // Maximum particles including spawned ones
+    const particleCount = 30000;
+    const maxParticles = 45000; // Maximum particles including spawned ones
     particlesRef.current = [];
     for (let i = 0; i < particleCount; i++) {
       particlesRef.current.push({
@@ -262,15 +262,15 @@ export function FluidParticles({ className = "" }: FluidParticlesProps) {
       });
     }
 
-    // Periodic swirl generation - create 3 random swirls every 2 seconds
+    // Periodic swirl generation - create 1 random swirl every 2 seconds
     const generateSwirls = () => {
       if (!fluidSolverRef.current) return;
 
-      for (let s = 0; s < 3; s++) {
+      for (let s = 0; s < 1; s++) {
         const x = Math.floor(Math.random() * gridSize);
         const y = Math.floor(Math.random() * gridSize);
-        const strength = (Math.random() - 0.5) * 15;
-        const radius = 5;
+        const strength = (Math.random() - 0.5) * 5;
+        const radius = 10;
 
         for (let dx = -radius; dx <= radius; dx++) {
           for (let dy = -radius; dy <= radius; dy++) {
@@ -365,7 +365,7 @@ export function FluidParticles({ className = "" }: FluidParticlesProps) {
         const baseAlpha = Math.sin(p.life * Math.PI) * 0.6;
         const speedBonus = Math.min(speed * 0.05, 0.3);
         const alpha = baseAlpha + speedBonus;
-        const size = 0.5;
+        const size = 0.8;
 
         ctx.fillStyle = `hsla(${p.hue}, 80%, 60%, ${alpha})`;
         ctx.beginPath();
