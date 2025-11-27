@@ -247,8 +247,9 @@ export function FluidParticles({ className = "" }: FluidParticlesProps) {
     const gridSize = 64;
     fluidSolverRef.current = new FluidSolver(gridSize, 0.0001, 0.0000001, 0.1);
 
-    // Initialize 5,000 particles
+    // Initialize 8,000 particles
     const particleCount = 8000;
+    const maxParticles = 12000; // Maximum particles including spawned ones
     particlesRef.current = [];
     for (let i = 0; i < particleCount; i++) {
       particlesRef.current.push({
@@ -261,95 +262,60 @@ export function FluidParticles({ className = "" }: FluidParticlesProps) {
       });
     }
 
-    // Mouse handlers
-    const handleMouseMove = (e: MouseEvent) => {
-      mouseRef.current.px = mouseRef.current.x;
-      mouseRef.current.py = mouseRef.current.y;
-      mouseRef.current.x = e.clientX;
-      mouseRef.current.y = e.clientY;
-    };
+    // Periodic swirl generation - create 3 random swirls every 2 seconds
+    const generateSwirls = () => {
+      if (!fluidSolverRef.current) return;
 
-    const handleMouseDown = () => {
-      mouseRef.current.down = true;
-    };
+      for (let s = 0; s < 3; s++) {
+        const x = Math.floor(Math.random() * gridSize);
+        const y = Math.floor(Math.random() * gridSize);
+        const strength = (Math.random() - 0.5) * 15;
+        const radius = 5;
 
-    const handleMouseUp = () => {
-      mouseRef.current.down = false;
-    };
-
-    const handleTouchMove = (e: TouchEvent) => {
-      if (e.touches.length > 0) {
-        mouseRef.current.px = mouseRef.current.x;
-        mouseRef.current.py = mouseRef.current.y;
-        mouseRef.current.x = e.touches[0].clientX;
-        mouseRef.current.y = e.touches[0].clientY;
-        mouseRef.current.down = true;
+        for (let dx = -radius; dx <= radius; dx++) {
+          for (let dy = -radius; dy <= radius; dy++) {
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            if (dist < radius) {
+              const force = (1 - dist / radius) * strength;
+              fluidSolverRef.current.addVelocity(
+                x + dx,
+                y + dy,
+                -dy * force / radius,
+                dx * force / radius
+              );
+            }
+          }
+        }
       }
     };
 
-    const handleTouchEnd = () => {
-      mouseRef.current.down = false;
-    };
-
-    canvas.addEventListener("mousemove", handleMouseMove);
-    canvas.addEventListener("mousedown", handleMouseDown);
-    canvas.addEventListener("mouseup", handleMouseUp);
-    canvas.addEventListener("touchmove", handleTouchMove);
-    canvas.addEventListener("touchend", handleTouchEnd);
+    // Generate swirls every 2 seconds
+    const swirlInterval = setInterval(generateSwirls, 2000);
+    // Generate initial swirls
+    generateSwirls();
 
     // Animation loop
     const animate = () => {
       const fluid = fluidSolverRef.current;
       if (!fluid) return;
 
-      // Clear with slow fade for longer trails
-      ctx.fillStyle = "rgba(0, 0, 0, 0.008)";
+      // Clear canvas (no fade - particles will create trails by spawning)
+      ctx.fillStyle = "rgba(0, 0, 0, 1)";
       ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-      // Mouse interaction - inject velocity when hovering
-      const mouse = mouseRef.current;
-      const dx = mouse.x - mouse.px;
-      const dy = mouse.y - mouse.py;
-
-      // Always add some turbulence when mouse is in canvas, even when stationary
-      if (mouse.x > 0 && mouse.x < canvas.width && mouse.y > 0 && mouse.y < canvas.height) {
-        const gridX = (mouse.x / canvas.width) * gridSize;
-        const gridY = (mouse.y / canvas.height) * gridSize;
-
-        // Add velocity based on mouse movement
-        if (Math.abs(dx) > 0 || Math.abs(dy) > 0) {
-          fluid.addVelocity(gridX, gridY, dx * 0.5, dy * 0.5);
-
-          // Add velocity in surrounding cells
-          for (let i = -2; i <= 2; i++) {
-            for (let j = -2; j <= 2; j++) {
-              const dist = Math.sqrt(i * i + j * j);
-              if (dist < 3) {
-                const force = (1 - dist / 3);
-                fluid.addVelocity(gridX + i, gridY + j, dx * force * 0.3, dy * force * 0.3);
-              }
-            }
-          }
-        }
-
-        // Add continuous turbulence when hovering (even without movement)
-        const turbulenceStrength = 0.2;
-        const angle = Date.now() * 0.001;
-        fluid.addVelocity(
-          gridX,
-          gridY,
-          Math.cos(angle) * turbulenceStrength,
-          Math.sin(angle) * turbulenceStrength
-        );
-      }
 
       // Step fluid simulation
       fluid.step();
 
       // Update and draw particles
       const particles = particlesRef.current;
+      const particlesToAdd: Particle[] = [];
+
       for (let i = 0; i < particles.length; i++) {
         const p = particles[i];
+
+        // Store previous position for trail particle spawning
+        const prevX = p.x;
+        const prevY = p.y;
 
         // Get velocity from fluid at particle position
         const gridX = (p.x / canvas.width) * gridSize;
@@ -368,6 +334,22 @@ export function FluidParticles({ className = "" }: FluidParticlesProps) {
         p.vx *= 0.995;
         p.vy *= 0.995;
 
+        // Calculate speed and distance moved
+        const speed = Math.sqrt(p.vx * p.vx + p.vy * p.vy);
+        const distMoved = Math.sqrt((p.x - prevX) ** 2 + (p.y - prevY) ** 2);
+
+        // Spawn trail particles when moving fast enough
+        if (speed > 0.5 && distMoved > 1 && particles.length < maxParticles && Math.random() < 0.15) {
+          particlesToAdd.push({
+            x: prevX,
+            y: prevY,
+            vx: p.vx * 0.7, // Inherit some velocity
+            vy: p.vy * 0.7,
+            life: Math.random() * 0.3, // Start with low life for fade effect
+            hue: p.hue + (Math.random() - 0.5) * 10, // Similar hue with variation
+          });
+        }
+
         // Wrap around boundaries
         if (p.x < 0) p.x = canvas.width;
         if (p.x > canvas.width) p.x = 0;
@@ -379,7 +361,6 @@ export function FluidParticles({ className = "" }: FluidParticlesProps) {
         if (p.life > 1) p.life = 0;
 
         // Draw particle with fixed size and vibrant colors
-        const speed = Math.sqrt(p.vx * p.vx + p.vy * p.vy);
         // Base alpha on life cycle, with bonus from speed
         const baseAlpha = Math.sin(p.life * Math.PI) * 0.6;
         const speedBonus = Math.min(speed * 0.05, 0.3);
@@ -392,6 +373,9 @@ export function FluidParticles({ className = "" }: FluidParticlesProps) {
         ctx.fill();
       }
 
+      // Add new trail particles
+      particlesToAdd.forEach(p => particles.push(p));
+
       animationRef.current = requestAnimationFrame(animate);
     };
 
@@ -402,11 +386,7 @@ export function FluidParticles({ className = "" }: FluidParticlesProps) {
         cancelAnimationFrame(animationRef.current);
       }
       window.removeEventListener("resize", resizeCanvas);
-      canvas.removeEventListener("mousemove", handleMouseMove);
-      canvas.removeEventListener("mousedown", handleMouseDown);
-      canvas.removeEventListener("mouseup", handleMouseUp);
-      canvas.removeEventListener("touchmove", handleTouchMove);
-      canvas.removeEventListener("touchend", handleTouchEnd);
+      clearInterval(swirlInterval);
     };
   }, []);
 
