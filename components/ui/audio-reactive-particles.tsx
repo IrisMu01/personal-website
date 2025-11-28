@@ -5,10 +5,13 @@ interface AudioReactiveParticlesProps {
   audioElement?: HTMLAudioElement | null;
 }
 
-interface AudioParticle {
-  angle: number;
-  speed: number;
-  distance: number;
+interface AudioParticle3D {
+  x: number;
+  y: number;
+  z: number;
+  vx: number;
+  vy: number;
+  vz: number;
   life: number;
   maxLife: number;
   size: number;
@@ -16,12 +19,36 @@ interface AudioParticle {
   hue: number;
 }
 
+// 3D to 2D projection with tilted camera view from above
+function project3D(
+  x: number,
+  y: number,
+  z: number,
+  centerX: number,
+  centerY: number
+): { screenX: number; screenY: number; scale: number } {
+  // Camera settings: tilted view from above (45 degree tilt)
+  const cameraDistance = 800;
+  const tiltAngle = Math.PI / 4; // 45 degrees
+
+  // Apply rotation for tilted view (rotate around X axis)
+  const rotatedY = y * Math.cos(tiltAngle) - z * Math.sin(tiltAngle);
+  const rotatedZ = y * Math.sin(tiltAngle) + z * Math.cos(tiltAngle) + cameraDistance;
+
+  // Perspective projection
+  const scale = cameraDistance / (cameraDistance + rotatedZ);
+  const screenX = centerX + x * scale;
+  const screenY = centerY - rotatedY * scale; // Negative for screen coordinates
+
+  return { screenX, screenY, scale };
+}
+
 export function AudioReactiveParticles({
   className = "",
   audioElement = null,
 }: AudioReactiveParticlesProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const particlesRef = useRef<AudioParticle[]>([]);
+  const particlesRef = useRef<AudioParticle3D[]>([]);
   const analyserRef = useRef<AnalyserNode | null>(null);
   const dataArrayRef = useRef<Uint8Array | null>(null);
   const audioContextRef = useRef<AudioContext | null>(null);
@@ -35,9 +62,12 @@ export function AudioReactiveParticles({
       const particleCount = 3000;
       for (let i = 0; i < particleCount; i++) {
         particlesRef.current.push({
-          angle: Math.random() * Math.PI * 2,
-          speed: 0,
-          distance: 0,
+          x: 0,
+          y: 0,
+          z: 0,
+          vx: 0,
+          vy: 0,
+          vz: 0,
           life: 0,
           maxLife: Math.random() * 80 + 40,
           size: 1,
@@ -127,7 +157,7 @@ export function AudioReactiveParticles({
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
       const centerX = canvas.width / 2;
-      const centerY = canvas.height / 2;
+      const centerY = canvas.height * 0.65; // Lower on screen for better view
       const particles = particlesRef.current;
 
       // Get frequency data
@@ -150,61 +180,96 @@ export function AudioReactiveParticles({
       const avgIntensity =
         frequencyData.reduce((a, b) => a + b, 0) / frequencyData.length;
 
-      // Update and draw particles
+      // Update particles
       for (let i = 0; i < particles.length; i++) {
         const p = particles[i];
         const intensity = frequencyData[p.frequencyBand] || 0;
 
         // Spawn new particles based on audio
         if (p.life <= 0 && intensity > 0.05) {
-          p.angle = Math.random() * Math.PI * 2;
-          p.speed = intensity * 3 + avgIntensity * 2; // Speed based on loudness
-          p.distance = 0;
+          const angle = Math.random() * Math.PI * 2;
+
+          // Frequency-based initial velocity:
+          // Low frequencies (0-2): shoot outward (horizontal)
+          // High frequencies (6-7): shoot upward in tiers
+          const frequencyRatio = p.frequencyBand / 8;
+
+          // Base speed from audio intensity
+          const baseSpeed = (intensity * 4 + avgIntensity * 2) * 1.5;
+
+          // Horizontal spread (more for low frequencies)
+          const horizontalFactor = 1 - frequencyRatio * 0.7;
+          p.vx = Math.cos(angle) * baseSpeed * horizontalFactor;
+          p.vz = Math.sin(angle) * baseSpeed * horizontalFactor;
+
+          // Vertical velocity (more for high frequencies)
+          const verticalFactor = 0.3 + frequencyRatio * 1.2;
+          p.vy = baseSpeed * verticalFactor;
+
+          // Reset position to center
+          p.x = 0;
+          p.y = 0;
+          p.z = 0;
+
           p.life = p.maxLife;
           p.hue = 260 + p.frequencyBand * 5; // Different hues for different frequencies
         }
 
         if (p.life > 0) {
-          // Move particle outward
-          p.distance += p.speed;
+          // Update position with velocity
+          p.x += p.vx;
+          p.y += p.vy;
+          p.z += p.vz;
 
-          // Decay distance based on frequency (higher frequency = less distance)
-          const frequencyDecay = 1 - (p.frequencyBand / 8) * 0.6;
-          const maxDistance = Math.min(canvas.width, canvas.height) * 0.4 * frequencyDecay;
-
-          // Calculate position
-          const x = centerX + Math.cos(p.angle) * p.distance;
-          const y = centerY + Math.sin(p.angle) * p.distance;
-
-          // Draw particle
-          const lifeRatio = p.life / p.maxLife;
-          const alpha = Math.sin(lifeRatio * Math.PI) * 0.8;
-          const size = p.size * lifeRatio;
-
-          // Gradient effect based on distance
-          const distRatio = p.distance / maxDistance;
-          const gradient = ctx.createRadialGradient(x, y, 0, x, y, size * 2);
-          gradient.addColorStop(0, `hsla(${p.hue}, 80%, 70%, ${alpha})`);
-          gradient.addColorStop(1, `hsla(${p.hue}, 80%, 50%, 0)`);
-
-          ctx.fillStyle = gradient;
-          ctx.beginPath();
-          ctx.arc(x, y, size * 2, 0, Math.PI * 2);
-          ctx.fill();
+          // Apply gravity and air resistance
+          p.vy -= 0.15; // Gravity pulls down
+          p.vx *= 0.99;
+          p.vz *= 0.99;
+          p.vy *= 0.98;
 
           // Decrease life
           p.life -= 1;
 
-          // Reset if too far
-          if (p.distance > maxDistance) {
+          // Reset if particle falls too low or moves too far
+          if (p.y < -200 || Math.abs(p.x) > 600 || Math.abs(p.z) > 600) {
             p.life = 0;
           }
         }
       }
 
+      // Sort particles by depth (z + y) for proper rendering order
+      const sortedParticles = [...particles].sort((a, b) => (b.z + b.y) - (a.z + a.y));
+
+      // Draw particles
+      for (const p of sortedParticles) {
+        if (p.life > 0) {
+          const { screenX, screenY, scale } = project3D(p.x, p.y, p.z, centerX, centerY);
+
+          // Skip if off-screen
+          if (screenX < -100 || screenX > canvas.width + 100 ||
+              screenY < -100 || screenY > canvas.height + 100) {
+            continue;
+          }
+
+          const lifeRatio = p.life / p.maxLife;
+          const alpha = Math.sin(lifeRatio * Math.PI) * 0.9;
+          const size = p.size * scale * lifeRatio;
+
+          // Gradient effect
+          const gradient = ctx.createRadialGradient(screenX, screenY, 0, screenX, screenY, size * 2);
+          gradient.addColorStop(0, `hsla(${p.hue}, 85%, 70%, ${alpha})`);
+          gradient.addColorStop(1, `hsla(${p.hue}, 85%, 50%, 0)`);
+
+          ctx.fillStyle = gradient;
+          ctx.beginPath();
+          ctx.arc(screenX, screenY, size * 2, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+
       // Draw center glow based on overall intensity
       if (avgIntensity > 0.1) {
-        const glowSize = 40 + avgIntensity * 100;
+        const glowSize = 60 + avgIntensity * 120;
         const gradient = ctx.createRadialGradient(
           centerX,
           centerY,
@@ -213,8 +278,8 @@ export function AudioReactiveParticles({
           centerY,
           glowSize
         );
-        gradient.addColorStop(0, `hsla(280, 80%, 70%, ${avgIntensity * 0.3})`);
-        gradient.addColorStop(1, "hsla(280, 80%, 70%, 0)");
+        gradient.addColorStop(0, `hsla(280, 85%, 70%, ${avgIntensity * 0.4})`);
+        gradient.addColorStop(1, "hsla(280, 85%, 70%, 0)");
 
         ctx.fillStyle = gradient;
         ctx.beginPath();
