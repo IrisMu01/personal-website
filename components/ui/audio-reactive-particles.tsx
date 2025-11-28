@@ -29,7 +29,7 @@ function project3D(
 ): { screenX: number; screenY: number; scale: number } {
   // Camera settings: tilted view from above (45 degree tilt)
   const cameraDistance = 800;
-  const tiltAngle = Math.PI / 4; // 45 degrees
+  const tiltAngle = Math.PI / 6; // 45 degrees
 
   // Apply rotation for tilted view (rotate around X axis)
   const rotatedY = y * Math.cos(tiltAngle) - z * Math.sin(tiltAngle);
@@ -70,7 +70,7 @@ export function AudioReactiveParticles({
           vz: 0,
           life: 0,
           maxLife: Math.random() * 80 + 40,
-          size: 1,
+          size: 3,
           frequencyBand: Math.floor(Math.random() * 8),
           hue: Math.random() * 40 + 260, // Purple/pink range: 260-300
         });
@@ -195,7 +195,7 @@ export function AudioReactiveParticles({
           const frequencyRatio = p.frequencyBand / 8;
 
           // Base speed from audio intensity
-          const baseSpeed = (intensity * 4 + avgIntensity * 2) * 1.5;
+          const baseSpeed = (intensity * 4 + avgIntensity * 2) * 4;
 
           // Horizontal spread (more for low frequencies)
           const horizontalFactor = 1 - frequencyRatio * 0.7;
@@ -203,7 +203,7 @@ export function AudioReactiveParticles({
           p.vz = Math.sin(angle) * baseSpeed * horizontalFactor;
 
           // Vertical velocity (more for high frequencies)
-          const verticalFactor = 0.3 + frequencyRatio * 1.2;
+          const verticalFactor = 0.3 + frequencyRatio * 6;
           p.vy = baseSpeed * verticalFactor;
 
           // Reset position to center
@@ -222,16 +222,16 @@ export function AudioReactiveParticles({
           p.z += p.vz;
 
           // Apply gravity and air resistance
-          p.vy -= 0.15; // Gravity pulls down
+          p.vy -= 0.10; // Gravity pulls down
           p.vx *= 0.99;
           p.vz *= 0.99;
           p.vy *= 0.98;
 
           // Decrease life
-          p.life -= 1;
+          p.life -= 0.7;
 
           // Reset if particle falls too low or moves too far
-          if (p.y < -200 || Math.abs(p.x) > 600 || Math.abs(p.z) > 600) {
+          if (p.y < -200 || Math.abs(p.x) > 2000 || Math.abs(p.z) > 2000) {
             p.life = 0;
           }
         }
