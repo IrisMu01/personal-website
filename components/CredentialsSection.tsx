@@ -1,5 +1,4 @@
 import { Github, Linkedin, Mail } from "lucide-react";
-import { ShootingStars } from "./ui/shooting-stars";
 
 interface CredentialsSectionProps {
   activeTab: "cs" | "music";
@@ -7,58 +6,46 @@ interface CredentialsSectionProps {
 
 export function CredentialsSection({ activeTab }: CredentialsSectionProps) {
   return (
-    <header
-      className={`border-b relative z-20 transition-colors duration-700 overflow-hidden ${
-        activeTab === "cs"
-          ? "bg-slate-900 border-slate-800"
-          : "bg-purple-900 border-purple-800"
-      }`}
-    >
-      <ShootingStars />
-      <div className="px-4 py-8 relative z-10">
-        <div className="flex items-start gap-6">
-          {/* Profile Picture */}
-          <img
-            src="/assets/profile_pic.png"
-            alt="Profile"
-            className="w-24 h-24 rounded-full object-cover border-2 border-slate-700"
-          />
-          
-          <div className="flex-1">
-            <h1 className="text-slate-100 mb-2">Iris Mu</h1>
-            <p className="text-slate-400 mb-4">
-              Computer Science & Music Production
-            </p>
-            <div className="flex gap-4">
-              <a
-                href="https://github.com/IrisMu01"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-slate-400 hover:text-slate-100 transition-colors"
-                aria-label="GitHub"
-              >
-                <Github className="w-5 h-5" />
-              </a>
-              <a
-                href="https://www.linkedin.com/in/iris-mu/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-slate-400 hover:text-slate-100 transition-colors"
-                aria-label="LinkedIn"
-              >
-                <Linkedin className="w-5 h-5" />
-              </a>
-              <a
-                href="mailto:l5mu@uwaterloo.ca"
-                className="text-slate-400 hover:text-slate-100 transition-colors"
-                aria-label="Email"
-              >
-                <Mail className="w-5 h-5" />
-              </a>
-            </div>
+    <div className="fixed top-8 left-8 z-40">
+      <div className="flex items-center gap-4">
+        {/* Profile Picture */}
+        <img
+          src="/assets/profile_pic.png"
+          alt="Profile"
+          className="w-12 h-12 rounded-full object-cover border border-white/20"
+        />
+
+        <div>
+          <h1 className="text-white text-lg font-light mb-1">Iris Mu</h1>
+          <div className="flex gap-3">
+            <a
+              href="https://github.com/IrisMu01"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-white/60 hover:text-white transition-colors"
+              aria-label="GitHub"
+            >
+              <Github className="w-4 h-4" />
+            </a>
+            <a
+              href="https://www.linkedin.com/in/iris-mu/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-white/60 hover:text-white transition-colors"
+              aria-label="LinkedIn"
+            >
+              <Linkedin className="w-4 h-4" />
+            </a>
+            <a
+              href="mailto:l5mu@uwaterloo.ca"
+              className="text-white/60 hover:text-white transition-colors"
+              aria-label="Email"
+            >
+              <Mail className="w-4 h-4" />
+            </a>
           </div>
         </div>
       </div>
-    </header>
+    </div>
   );
 }

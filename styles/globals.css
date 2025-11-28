@@ -1,8 +1,16 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @custom-variant dark (&:is(.dark *));
+
+@layer base {
+  * {
+    font-family: 'Montserrat', sans-serif;
+  }
+}
 
 :root {
   --font-size: 16px;
@@ -214,7 +222,7 @@ html {
 }
 
 /* Custom Audio Player Styles */
-.custom-audio-player {
+.custom-audio-player-minimal {
     background: rgba(255, 255, 255, 0.1) !important;
     border-radius: 0.5rem !important;
     box-shadow: none !important;
@@ -223,19 +231,19 @@ html {
     padding: 10px !important;
   }
   
-  .custom-audio-player .rhap_container {
+  .rhap_container {
     background: transparent !important;
   }
   
   /* Force vertical stacking */
-  .custom-audio-player .rhap_stacked {
+  .rhap_stacked {
     display: flex !important;
     flex-direction: column !important;
     gap: 0.75rem !important;
   }
   
   /* Progress section - horizontal layout with proper spacing */
-  .custom-audio-player .rhap_progress-section {
+  .rhap_progress-section {
     display: flex !important;
     align-items: center !important;
     gap: 0.75rem !important;
@@ -243,7 +251,7 @@ html {
   }
   
   /* Current time - align left */
-  .custom-audio-player .rhap_current-time {
+  .rhap_current-time {
     color: rgba(255, 255, 255, 0.9) !important;
     font-size: 0.875rem !important;
     min-width: 45px !important;
@@ -252,7 +260,7 @@ html {
   }
   
   /* Total time - align right */
-  .custom-audio-player .rhap_total-time {
+  .rhap_total-time {
     color: rgba(255, 255, 255, 0.9) !important;
     font-size: 0.875rem !important;
     min-width: 45px !important;
@@ -261,7 +269,7 @@ html {
   }
   
   /* Progress container - takes remaining space */
-  .custom-audio-player .rhap_progress-container {
+  .rhap_progress-container {
     flex: 1 !important;
     display: flex !important;
     align-items: center !important;
@@ -270,7 +278,7 @@ html {
   }
   
   /* Progress bar background */
-  .custom-audio-player .rhap_progress-bar {
+  .rhap_progress-bar {
     position: relative !important;
     background-color: rgba(255, 255, 255, 0.2) !important;
     height: 6px !important;
@@ -279,14 +287,14 @@ html {
   }
   
   /* Progress filled */
-  .custom-audio-player .rhap_progress-filled {
+  .rhap_progress-filled {
     background-color: rgba(236, 72, 153, 0.8) !important;
     height: 6px !important;
     border-radius: 3px !important;
   }
   
   /* Progress indicator (the draggable dot) */
-  .custom-audio-player .rhap_progress-indicator {
+  .rhap_progress-indicator {
     background-color: rgba(236, 72, 153, 1) !important;
     width: 12px !important;
     height: 12px !important;
@@ -298,12 +306,12 @@ html {
   }
   
   /* Hide the download progress indicator (orange square) */
-  .custom-audio-player .rhap_download-progress {
+  .rhap_download-progress {
     display: none !important;
   }
   
   /* Controls section - flexbox with space-between */
-  .custom-audio-player .rhap_controls-section {
+  .rhap_controls-section {
     display: flex !important;
     justify-content: space-between !important;
     align-items: center !important;
@@ -311,7 +319,7 @@ html {
   }
   
   /* Loop button - align left */
-  .custom-audio-player .rhap_additional-controls {
+  .rhap_additional-controls {
     display: flex !important;
     align-items: center !important;
     min-width: 40px !important;
@@ -319,7 +327,7 @@ html {
   }
   
   /* Main controls (rewind, play, forward) - center */
-  .custom-audio-player .rhap_main-controls {
+  .rhap_main-controls {
     display: flex !important;
     align-items: center !important;
     gap: 0.5rem !important;
@@ -328,7 +336,7 @@ html {
   }
   
   /* Volume controls - align right */
-  .custom-audio-player .rhap_volume-controls {
+  .rhap_volume-controls {
     display: flex !important;
     align-items: center !important;
     min-width: 100px !important;
@@ -336,7 +344,7 @@ html {
   }
   
   /* Volume container */
-  .custom-audio-player .rhap_volume-container {
+  .rhap_volume-container {
     display: flex !important;
     align-items: center !important;
     gap: 0.5rem !important;
@@ -344,17 +352,17 @@ html {
   }
   
   /* Volume button */
-  .custom-audio-player .rhap_volume-button {
+  .rhap_volume-button {
     color: rgba(255, 255, 255, 0.9) !important;
     flex-shrink: 0 !important;
   }
   
-  .custom-audio-player .rhap_volume-button:hover {
+  .rhap_volume-button:hover {
     color: rgba(236, 72, 153, 1) !important;
   }
   
   /* Volume bar area - make it visible and draggable */
-  .custom-audio-player .rhap_volume-bar-area {
+  .rhap_volume-bar-area {
     width: 60px !important;
     height: 20px !important;
     display: flex !important;
@@ -364,7 +372,7 @@ html {
   }
   
   /* Volume bar background */
-  .custom-audio-player .rhap_volume-bar {
+  .rhap_volume-bar {
     position: relative !important;
     background-color: rgba(255, 255, 255, 0.2) !important;
     height: 6px !important;
@@ -373,7 +381,7 @@ html {
   }
   
   /* Volume indicator (the draggable dot) */
-  .custom-audio-player .rhap_volume-indicator {
+  .rhap_volume-indicator {
     background-color: rgba(236, 72, 153, 1) !important;
     width: 12px !important;
     height: 12px !important;
@@ -385,22 +393,183 @@ html {
   }
   
   /* All buttons */
-  .custom-audio-player .rhap_button-clear {
+  .rhap_button-clear {
     color: rgba(255, 255, 255, 0.9) !important;
     font-size: 1.25rem !important;
   }
   
-  .custom-audio-player .rhap_button-clear:hover {
+  .rhap_button-clear:hover {
     color: rgba(236, 72, 153, 1) !important;
   }
   
-  .custom-audio-player .rhap_button-clear svg {
+  .rhap_button-clear svg {
     width: 1.25rem !important;
     height: 1.25rem !important;
   }
   
   /* Play button - make it larger */
-  .custom-audio-player .rhap_play-pause-button svg {
+  .rhap_play-pause-button svg {
     width: 2rem !important;
     height: 2rem !important;
   }
+
+/* Minimalist Audio Player Styles for Apple-style UI */
+.custom-audio-player-minimal {
+  background: transparent !important;
+  box-shadow: none !important;
+  border: none !important;
+  padding: 0 !important;
+}
+
+.custom-audio-player-minimal .rhap_container {
+  background: transparent !important;
+  padding: 0 !important;
+}
+
+/* Two-row layout using flex-wrap */
+.custom-audio-player-minimal .rhap_stacked {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 1rem !important;
+  align-items: center !important;
+}
+
+/* Progress section - full width on first row */
+.custom-audio-player-minimal .rhap_progress-section {
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.75rem !important;
+  flex-basis: 100% !important;
+  order: 0 !important;
+}
+
+/* Second row container using remaining space */
+/* Loop button on the very left */
+.custom-audio-player-minimal .rhap_additional-controls {
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.5rem !important;
+  order: 1 !important;
+  flex: 0 0 auto !important;
+}
+
+/* Main controls (play/pause/rewind/forward) centered */
+.custom-audio-player-minimal .rhap_main-controls {
+  display: flex !important;
+  align-items: center !important;
+  gap: 1rem !important;
+  order: 2 !important;
+  flex: 1 1 auto !important;
+  justify-content: center !important;
+}
+
+/* Volume controls on the very right */
+.custom-audio-player-minimal .rhap_volume-controls {
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.5rem !important;
+  order: 3 !important;
+  flex: 0 0 auto !important;
+}
+
+/* Time displays */
+.custom-audio-player-minimal .rhap_current-time,
+.custom-audio-player-minimal .rhap_total-time {
+  color: rgba(255, 255, 255, 0.7) !important;
+  font-size: 0.875rem !important;
+  min-width: 45px !important;
+}
+
+/* Progress bar */
+.custom-audio-player-minimal .rhap_progress-container {
+  flex: 1 !important;
+  display: flex !important;
+  align-items: center !important;
+  height: 24px !important;
+  cursor: pointer !important;
+}
+
+.custom-audio-player-minimal .rhap_progress-bar {
+  position: relative !important;
+  background-color: rgba(255, 255, 255, 0.15) !important;
+  height: 4px !important;
+  border-radius: 2px !important;
+  width: 100% !important;
+}
+
+.custom-audio-player-minimal .rhap_progress-filled {
+  background: linear-gradient(90deg, rgba(167, 139, 250, 0.8), rgba(236, 72, 153, 0.8)) !important;
+  height: 4px !important;
+  border-radius: 2px !important;
+}
+
+.custom-audio-player-minimal .rhap_progress-indicator {
+  background: linear-gradient(135deg, rgba(167, 139, 250, 1), rgba(236, 72, 153, 1)) !important;
+  width: 14px !important;
+  height: 14px !important;
+  border-radius: 50% !important;
+  position: absolute !important;
+  top: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  box-shadow: 0 0 8px rgba(236, 72, 153, 0.5) !important;
+}
+
+.custom-audio-player-minimal .rhap_download-progress {
+  display: none !important;
+}
+
+/* Volume controls */
+.custom-audio-player-minimal .rhap_volume-container {
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.5rem !important;
+}
+
+.custom-audio-player-minimal .rhap_volume-bar-area {
+  width: 80px !important;
+  height: 24px !important;
+  display: flex !important;
+  align-items: center !important;
+  cursor: pointer !important;
+}
+
+.custom-audio-player-minimal .rhap_volume-bar {
+  position: relative !important;
+  background-color: rgba(255, 255, 255, 0.15) !important;
+  height: 4px !important;
+  border-radius: 2px !important;
+  width: 100% !important;
+}
+
+.custom-audio-player-minimal .rhap_volume-indicator {
+  background: linear-gradient(135deg, rgba(167, 139, 250, 1), rgba(236, 72, 153, 1)) !important;
+  width: 12px !important;
+  height: 12px !important;
+  border-radius: 50% !important;
+  position: absolute !important;
+  top: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  box-shadow: 0 0 6px rgba(236, 72, 153, 0.5) !important;
+}
+
+/* Buttons */
+.custom-audio-player-minimal .rhap_button-clear {
+  color: rgba(255, 255, 255, 0.8) !important;
+  transition: all 0.3s ease !important;
+}
+
+.custom-audio-player-minimal .rhap_button-clear:hover {
+  color: rgba(255, 255, 255, 1) !important;
+  transform: scale(1.1) !important;
+}
+
+.custom-audio-player-minimal .rhap_button-clear svg {
+  width: 1.25rem !important;
+  height: 1.25rem !important;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3)) !important;
+}
+
+.custom-audio-player-minimal .rhap_play-pause-button svg {
+  width: 2.5rem !important;
+  height: 2.5rem !important;
+}
