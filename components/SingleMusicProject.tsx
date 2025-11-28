@@ -42,7 +42,7 @@ export const SingleMusicProject = forwardRef<HTMLAudioElement, SingleMusicProjec
               ))}
             </div>
 
-            {/* Audio Player */}
+            {/* Audio Player. CrossOrigin must NOT be anonymous - R2 will reject request */}
             <div className="bg-black/30 backdrop-blur-md rounded-2xl p-6">
               <AudioPlayer
                 key={project.id}
@@ -52,7 +52,6 @@ export const SingleMusicProject = forwardRef<HTMLAudioElement, SingleMusicProjec
                 showJumpControls={true}
                 showSkipControls={false}
                 layout="stacked"
-                crossOrigin="anonymous"
               />
             </div>
           </div>

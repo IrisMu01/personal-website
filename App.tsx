@@ -11,7 +11,7 @@ export default function App() {
   const [activeTab, setActiveTab] = useState<"cs" | "music">("cs");
   const [selectedCSProjectId, setSelectedCSProjectId] = useState(csProjects[0].id);
   const [selectedMusicProjectId, setSelectedMusicProjectId] = useState(musicProjects[0].id);
-  const audioRef = useRef<HTMLAudioElement>(null);
+  const audioRef = useRef<HTMLAudioElement>(null); // TODO for claude: this is never updated once initialized to null
 
   // Get currently selected projects
   const selectedCSProject = csProjects.find((p) => p.id === selectedCSProjectId) || csProjects[0];

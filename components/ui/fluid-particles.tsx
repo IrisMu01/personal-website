@@ -350,14 +350,9 @@ export function FluidParticles({ className = "" }: FluidParticlesProps) {
           });
         }
 
-        // Kill particles at edges and respawn in center
-        if (p.x < 0 || p.x > canvas.width || p.y < 0 || p.y > canvas.height) {
-          // Respawn in center 60% of screen
-          p.x = canvas.width * (0.2 + Math.random() * 0.6);
-          p.y = canvas.height * (0.2 + Math.random() * 0.6);
-          p.vx = 0;
-          p.vy = 0;
-          p.life = Math.random();
+        // Kill horizontally / vertically moving particles near edges
+        if ((p.x <= 0 || p.x >= canvas.width - 0 || p.y <= 0 || p.y >= canvas.height - 0)) {
+          p.life = 0;
         }
 
         // Update life
