@@ -19,6 +19,43 @@ interface AudioParticle3D {
   hue: number;
 }
 
+// Map frequency bins to musical ranges
+function getFrequencyBands(dataArray: Uint8Array, sampleRate: number = 44100): number[] {
+  // FFT size is 512, so 256 bins, each bin = sampleRate / fftSize
+  const fftSize = 512;
+  const binWidth = sampleRate / fftSize; // ~86 Hz per bin
+
+  // Define frequency ranges (in Hz) for 8 bands
+  const ranges = [
+    { min: 0, max: 100 },      // Band 0: Sub-bass
+    { min: 100, max: 250 },    // Band 1: Bass
+    { min: 250, max: 500 },    // Band 2: Low-mid
+    { min: 500, max: 1000 },   // Band 3: Mid
+    { min: 1000, max: 2000 },  // Band 4: Mid-high
+    { min: 2000, max: 4000 },  // Band 5: High
+    { min: 4000, max: 8000 },  // Band 6: Very high
+    { min: 8000, max: 20000 }, // Band 7: Ultra high
+  ];
+
+  const bands: number[] = [];
+
+  for (const range of ranges) {
+    const startBin = Math.floor(range.min / binWidth);
+    const endBin = Math.min(Math.floor(range.max / binWidth), dataArray.length - 1);
+
+    let sum = 0;
+    let count = 0;
+    for (let i = startBin; i <= endBin; i++) {
+      sum += dataArray[i];
+      count++;
+    }
+
+    bands.push(count > 0 ? sum / count / 255 : 0); // Normalize to 0-1
+  }
+
+  return bands;
+}
+
 // 3D to 2D projection with tilted camera view from above
 function project3D(
   x: number,
@@ -151,6 +188,9 @@ export function AudioReactiveParticles({
     resizeCanvas();
     window.addEventListener("resize", resizeCanvas);
 
+    // Rotating arc angle for spiral effect (mid-high frequencies)
+    let spiralAngle = 0;
+
     // Animation loop
     const animate = () => {
       ctx.fillStyle = "rgba(0, 0, 0, 0.08)";
@@ -160,25 +200,19 @@ export function AudioReactiveParticles({
       const centerY = canvas.height * 0.65; // Lower on screen for better view
       const particles = particlesRef.current;
 
-      // Get frequency data
+      // Get frequency data with musical frequency mapping
       let frequencyData: number[] = Array(8).fill(0);
       if (analyserRef.current && dataArrayRef.current) {
         analyserRef.current.getByteFrequencyData(dataArrayRef.current);
-
-        // Group frequencies into 8 bands
-        const bandSize = Math.floor(dataArrayRef.current.length / 8);
-        for (let i = 0; i < 8; i++) {
-          let sum = 0;
-          for (let j = 0; j < bandSize; j++) {
-            sum += dataArrayRef.current[i * bandSize + j];
-          }
-          frequencyData[i] = sum / bandSize / 255; // Normalize to 0-1
-        }
+        frequencyData = getFrequencyBands(dataArrayRef.current);
       }
 
       // Calculate overall loudness
       const avgIntensity =
         frequencyData.reduce((a, b) => a + b, 0) / frequencyData.length;
+
+      // Update spiral angle for mid-high frequencies (rotates over time)
+      spiralAngle += 0.02;
 
       // Update particles
       for (let i = 0; i < particles.length; i++) {
@@ -187,29 +221,79 @@ export function AudioReactiveParticles({
 
         // Spawn new particles based on audio
         if (p.life <= 0 && intensity > 0.05) {
-          const angle = Math.random() * Math.PI * 2;
+          // Determine spawn position and velocity based on frequency band
+          // Band 0-1: Bass (0-250 Hz) - wide spawn radius
+          // Band 2-3: Low-mid/Mid (250-1000 Hz) - medium spawn radius
+          // Band 4: Mid-high (1000-2000 Hz) - small spawn radius, arc generation
+          // Band 5-7: High/Very high/Ultra high (2000+ Hz) - smallest spawn radius
 
-          // Frequency-based initial velocity:
-          // Low frequencies (0-2): shoot outward (horizontal)
-          // High frequencies (6-7): shoot upward in tiers
-          const frequencyRatio = p.frequencyBand / 8;
+          let angle: number;
+          let spawnRadius: number;
+
+          // Mid-high frequencies (band 4): Arc generation with spiral
+          if (p.frequencyBand === 4) {
+            // Generate in a rotating arc (60 degree arc)
+            const arcWidth = Math.PI / 3; // 60 degrees
+            angle = spiralAngle + (Math.random() - 0.5) * arcWidth;
+            spawnRadius = 20; // Small spawn radius
+          } else {
+            // All other frequencies: full circle
+            angle = Math.random() * Math.PI * 2;
+
+            // Spawn radius based on frequency
+            if (p.frequencyBand <= 1) {
+              // Bass: widest spawn radius
+              spawnRadius = 80 + Math.random() * 40;
+            } else if (p.frequencyBand <= 3) {
+              // Low-mid/Mid: medium spawn radius
+              spawnRadius = 40 + Math.random() * 30;
+            } else if (p.frequencyBand === 4) {
+              // Mid-high: small spawn radius (handled above)
+              spawnRadius = 20;
+            } else {
+              // High frequencies: smallest spawn radius (at origin)
+              spawnRadius = 5 + Math.random() * 10;
+            }
+          }
+
+          // Set spawn position in circle
+          p.x = Math.cos(angle) * spawnRadius;
+          p.z = Math.sin(angle) * spawnRadius;
+          p.y = 0;
 
           // Base speed from audio intensity
           const baseSpeed = (intensity * 4 + avgIntensity * 2) * 4;
 
-          // Horizontal spread (more for low frequencies)
-          const horizontalFactor = 1 - frequencyRatio * 0.7;
+          // Velocity adjustments by frequency range
+          let horizontalFactor: number;
+          let verticalFactor: number;
+
+          if (p.frequencyBand <= 1) {
+            // Bass (0-250 Hz): mostly outward
+            horizontalFactor = 1.0;
+            verticalFactor = 0.3;
+          } else if (p.frequencyBand <= 3) {
+            // Low-mid/Mid (250-1000 Hz): balanced
+            horizontalFactor = 0.7;
+            verticalFactor = 0.8;
+          } else if (p.frequencyBand === 4) {
+            // Mid-high (1000-2000 Hz): HIGH vertical sensitivity
+            horizontalFactor = 0.4;
+            verticalFactor = 1.8; // Increased vertical speed
+          } else if (p.frequencyBand === 5) {
+            // High (2000-4000 Hz): still some vertical
+            horizontalFactor = 0.5;
+            verticalFactor = 1.0;
+          } else {
+            // Very high/Ultra high (4000+ Hz): more horizontal (timbre)
+            horizontalFactor = 0.9; // Increased horizontal for timbre
+            verticalFactor = 0.5; // Decreased vertical
+          }
+
+          // Set velocity
           p.vx = Math.cos(angle) * baseSpeed * horizontalFactor;
           p.vz = Math.sin(angle) * baseSpeed * horizontalFactor;
-
-          // Vertical velocity (more for high frequencies)
-          const verticalFactor = 0.3 + frequencyRatio * 6;
           p.vy = baseSpeed * verticalFactor;
-
-          // Reset position to center
-          p.x = 0;
-          p.y = 0;
-          p.z = 0;
 
           p.life = p.maxLife;
           p.hue = 260 + p.frequencyBand * 5; // Different hues for different frequencies
