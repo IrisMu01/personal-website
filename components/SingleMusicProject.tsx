@@ -1,26 +1,27 @@
 import { MusicProject } from "@/data/projects";
 import AudioPlayer from "react-h5-audio-player";
-import { forwardRef, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 
 interface SingleMusicProjectProps {
   project: MusicProject;
+  onAudioElement?: (element: HTMLAudioElement | null) => void;
 }
 
-export const SingleMusicProject = forwardRef<HTMLAudioElement, SingleMusicProjectProps>(
-  ({ project }, audioRef) => {
-    const playerRef = useRef<AudioPlayer>(null);
+export const SingleMusicProject = ({ project, onAudioElement }: SingleMusicProjectProps) => {
+  const playerRef = useRef<AudioPlayer>(null);
 
-    useEffect(() => {
-      // Get the actual audio element from the player and set it to the ref
-      if (playerRef.current && playerRef.current.audio && playerRef.current.audio.current) {
-        const audioElement = playerRef.current.audio.current;
-        if (typeof audioRef === 'function') {
-          audioRef(audioElement);
-        } else if (audioRef) {
-          (audioRef as React.MutableRefObject<HTMLAudioElement | null>).current = audioElement;
-        }
-      }
-    }, [audioRef, project.audioUrl]);
+  useEffect(() => {
+    // Get the actual audio element from the player and pass it to the callback
+    if (playerRef.current && playerRef.current.audio && playerRef.current.audio.current) {
+      const audioElement = playerRef.current.audio.current;
+      onAudioElement?.(audioElement);
+    }
+
+    // Cleanup: set to null when component unmounts or project changes
+    return () => {
+      onAudioElement?.(null);
+    };
+  }, [onAudioElement, project.audioUrl]);
 
     return (
       <div className="fixed inset-0 flex flex-col items-center justify-center z-10 pointer-events-none">
@@ -58,7 +59,4 @@ export const SingleMusicProject = forwardRef<HTMLAudioElement, SingleMusicProjec
         </div>
       </div>
     );
-  }
-);
-
-SingleMusicProject.displayName = "SingleMusicProject";
+};

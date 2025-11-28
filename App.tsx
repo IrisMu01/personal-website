@@ -11,7 +11,7 @@ export default function App() {
   const [activeTab, setActiveTab] = useState<"cs" | "music">("cs");
   const [selectedCSProjectId, setSelectedCSProjectId] = useState(csProjects[0].id);
   const [selectedMusicProjectId, setSelectedMusicProjectId] = useState(musicProjects[0].id);
-  const audioRef = useRef<HTMLAudioElement>(null); // TODO for claude: this is never updated once initialized to null
+  const [audioElement, setAudioElement] = useState<HTMLAudioElement | null>(null);
 
   // Get currently selected projects
   const selectedCSProject = csProjects.find((p) => p.id === selectedCSProjectId) || csProjects[0];
@@ -44,7 +44,7 @@ export default function App() {
       ) : (
         <AudioReactiveParticles
           className="absolute inset-0 pointer-events-none z-0"
-          audioElement={audioRef.current}
+          audioElement={audioElement}
         />
       )}
 
@@ -68,7 +68,10 @@ export default function App() {
       {activeTab === "cs" ? (
         <SingleCSProject project={selectedCSProject} />
       ) : (
-        <SingleMusicProject project={selectedMusicProject} ref={audioRef} />
+        <SingleMusicProject
+          project={selectedMusicProject}
+          onAudioElement={setAudioElement}
+        />
       )}
     </div>
   );
