@@ -32,7 +32,7 @@ export function AudioReactiveParticles({
   // Initialize particles once
   useEffect(() => {
     if (particlesRef.current.length === 0) {
-      const particleCount = 1500;
+      const particleCount = 3000;
       for (let i = 0; i < particleCount; i++) {
         particlesRef.current.push({
           angle: Math.random() * Math.PI * 2,
@@ -40,7 +40,7 @@ export function AudioReactiveParticles({
           distance: 0,
           life: 0,
           maxLife: Math.random() * 80 + 40,
-          size: Math.random() * 3 + 1,
+          size: 1,
           frequencyBand: Math.floor(Math.random() * 8),
           hue: Math.random() * 40 + 260, // Purple/pink range: 260-300
         });
