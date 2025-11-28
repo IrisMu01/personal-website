@@ -43,7 +43,7 @@ export const SingleMusicProject = ({ project, onAudioElement }: SingleMusicProje
               ))}
             </div>
 
-            {/* Audio Player. CrossOrigin must NOT be anonymous - R2 will reject request */}
+            {/* Audio Player */}
             <div className="bg-black/30 backdrop-blur-md rounded-2xl p-6">
               <AudioPlayer
                 key={project.id}
@@ -53,6 +53,7 @@ export const SingleMusicProject = ({ project, onAudioElement }: SingleMusicProje
                 showJumpControls={true}
                 showSkipControls={false}
                 layout="stacked"
+                crossOrigin="anonymous"
               />
             </div>
           </div>
