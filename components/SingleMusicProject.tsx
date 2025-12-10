@@ -75,8 +75,6 @@ export const SingleMusicProject = ({ project, onAudioElement }: SingleMusicProje
             amplification={1.8}
             color="rgba(168, 85, 247, 0.9)"
             lineColor="rgba(192, 132, 252, 1)"
-            barWidth={6}
-            barGap={3}
           />
         </div>
       </div>

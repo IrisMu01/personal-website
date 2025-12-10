@@ -10,8 +10,6 @@ interface AudioSpectrumProps {
   amplification?: number;
   color?: string;
   lineColor?: string;
-  barWidth?: number;
-  barGap?: number;
 }
 
 export function AudioSpectrum({
@@ -24,8 +22,6 @@ export function AudioSpectrum({
   amplification = 1.5,
   color = "rgba(231, 209, 252, 0.8)", // lighter purple
   lineColor = "rgba(247, 238, 255, 0.9)", // very light purple
-  barWidth = 8,
-  barGap = 4,
 }: AudioSpectrumProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const analyserRef = useRef<AnalyserNode | null>(null);
@@ -150,10 +146,13 @@ export function AudioSpectrum({
         frequencyData = getFrequencyBands(dataArrayRef.current);
       }
 
-      // Calculate total width needed for bars
-      const totalBarWidth = barWidth + barGap;
-      const totalWidth = barCount * totalBarWidth - barGap;
-      const startX = (canvas.width - totalWidth) / 2;
+      // Calculate responsive bar dimensions
+      // Use 90% of screen width to leave some margin
+      const availableWidth = canvas.width * 0.9;
+      const totalBarWidth = availableWidth / barCount;
+      const barGap = totalBarWidth * 0.25; // Gap is 25% of total bar width
+      const barWidth = totalBarWidth - barGap;
+      const startX = (canvas.width - availableWidth) / 2;
 
       // Store bottom points for connecting line
       const bottomPoints: { x: number; y: number }[] = [];
@@ -204,7 +203,7 @@ export function AudioSpectrum({
       }
       window.removeEventListener("resize", resizeCanvas);
     };
-  }, [barCount, color, lineColor, barWidth, barGap, minFrequency, maxFrequency, amplification]);
+  }, [barCount, color, lineColor, minFrequency, maxFrequency, amplification]);
 
   return (
     <canvas
