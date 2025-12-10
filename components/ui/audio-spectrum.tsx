@@ -20,8 +20,8 @@ export function AudioSpectrum({
   maxFrequency = 20000,
   smoothing = 0.75,
   amplification = 1.5,
-  color = "rgba(231, 209, 252, 0.8)", // lighter purple
-  lineColor = "rgba(247, 238, 255, 0.9)", // very light purple
+  color = "rgba(221, 185, 255, 0.9)", // very light purple
+  lineColor = "rgba(197, 158, 233, 0.9)", // lighter purple
 }: AudioSpectrumProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const analyserRef = useRef<AnalyserNode | null>(null);
@@ -148,7 +148,7 @@ export function AudioSpectrum({
 
       // Calculate responsive bar dimensions
       // Use 90% of screen width to leave some margin
-      const availableWidth = canvas.width * 0.9;
+      const availableWidth = canvas.width;
       const totalBarWidth = availableWidth / barCount;
       const barGap = totalBarWidth * 0.25; // Gap is 25% of total bar width
       const barWidth = totalBarWidth - barGap;
@@ -160,7 +160,7 @@ export function AudioSpectrum({
       // Draw bars
       for (let i = 0; i < barCount; i++) {
         const intensity = Math.min(frequencyData[i], 1) * 0.3; // 70% less sensitive
-        const barHeight = Math.min(intensity * (canvas.height - 40), 200); // Cap at 200px
+        const barHeight = Math.min(intensity * (canvas.height - 40), 300); // Cap at 300px
 
         const x = startX + i * totalBarWidth;
         const y = 20; // Start from top with some padding

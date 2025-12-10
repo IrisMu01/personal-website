@@ -68,13 +68,11 @@ export const SingleMusicProject = ({ project, onAudioElement }: SingleMusicProje
           <AudioSpectrum
             audioElement={audioElement}
             className="w-full"
-            barCount={128}
+            barCount={256}
             minFrequency={20}
             maxFrequency={20000}
-            smoothing={0.8}
-            amplification={1.8}
-            color="rgba(168, 85, 247, 0.9)"
-            lineColor="rgba(192, 132, 252, 1)"
+            smoothing={0.75}
+            amplification={1.5}
           />
         </div>
       </div>
