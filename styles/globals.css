@@ -253,7 +253,7 @@ html {
   /* Current time - align left */
   .rhap_current-time {
     color: rgba(255, 255, 255, 0.9) !important;
-    font-size: 0.875rem !important;
+    font-size: 1rem !important;
     min-width: 45px !important;
     text-align: left !important;
     flex-shrink: 0 !important;
@@ -275,6 +275,7 @@ html {
     align-items: center !important;
     height: 20px !important;
     cursor: pointer !important;
+    margin: 0 0 -39px 0;
   }
   
   /* Progress bar background */
@@ -316,6 +317,7 @@ html {
     justify-content: space-between !important;
     align-items: center !important;
     width: 100% !important;
+    margin: 0px 5px -15px 5px!important;
   }
   
   /* Loop button - align left */
@@ -328,11 +330,7 @@ html {
   
   /* Main controls (rewind, play, forward) - center */
   .rhap_main-controls {
-    display: flex !important;
-    align-items: center !important;
-    gap: 0.5rem !important;
-    justify-content: center !important;
-    flex: 1 !important;
+    margin-bottom: -1px;
   }
   
   /* Volume controls - align right */
@@ -378,6 +376,7 @@ html {
     height: 6px !important;
     border-radius: 3px !important;
     width: 100% !important;
+    margin: 0px 0px -12px -5px !important;
   }
   
   /* Volume indicator (the draggable dot) */
@@ -395,7 +394,7 @@ html {
   /* All buttons */
   .rhap_button-clear {
     color: rgba(255, 255, 255, 0.9) !important;
-    font-size: 1.25rem !important;
+    font-size: 1rem !important;
   }
   
   .rhap_button-clear:hover {
@@ -403,14 +402,14 @@ html {
   }
   
   .rhap_button-clear svg {
-    width: 1.25rem !important;
-    height: 1.25rem !important;
+    width: 1.5rem !important;
+    height: 1.5rem !important;
   }
   
-  /* Play button - make it larger */
+  /* Play button */
   .rhap_play-pause-button svg {
-    width: 2rem !important;
-    height: 2rem !important;
+    width: 1.5rem !important;
+    height: 1.5rem !important;
   }
 
 /* Minimalist Audio Player Styles for Apple-style UI */
@@ -455,12 +454,7 @@ html {
 
 /* Main controls (play/pause/rewind/forward) centered */
 .custom-audio-player-minimal .rhap_main-controls {
-  display: flex !important;
-  align-items: center !important;
-  gap: 1rem !important;
-  order: 2 !important;
-  flex: 1 1 auto !important;
-  justify-content: center !important;
+    margin-bottom: -1px;
 }
 
 /* Volume controls on the very right */
@@ -539,6 +533,7 @@ html {
   height: 4px !important;
   border-radius: 2px !important;
   width: 100% !important;
+  margin: 0px 0px -12px -5px !important;
 }
 
 .custom-audio-player-minimal .rhap_volume-indicator {
@@ -564,14 +559,14 @@ html {
 }
 
 .custom-audio-player-minimal .rhap_button-clear svg {
-  width: 1.25rem !important;
-  height: 1.25rem !important;
+  width: 1.5rem !important;
+  height: 1.5rem !important;
   filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3)) !important;
 }
 
 .custom-audio-player-minimal .rhap_play-pause-button svg {
-  width: 2.5rem !important;
-  height: 2.5rem !important;
+  width: 1.5rem !important;
+  height: 1.5rem !important;
 }
 
 /* Full-Width Audio Player Styles */
@@ -610,8 +605,8 @@ html {
   display: flex !important;
   align-items: center !important;
   justify-content: space-between !important;
-  width: 100% !important;
-  margin-bottom: 0.5rem !important;
+  width: calc(100% - 10px) !important;
+  margin: 0px 5px -15px 5px !important;
 }
 
 /* Progress bar */
@@ -656,28 +651,27 @@ html {
 .custom-audio-player-fullwidth .rhap_current-time,
 .custom-audio-player-fullwidth .rhap_total-time {
   color: rgba(255, 255, 255, 0.7) !important;
-  font-size: 0.875rem !important;
+  font-size: 1rem !important;
   min-width: 45px !important;
+  margin-bottom: -15px;
 }
 
 /* Main controls - left side */
 .custom-audio-player-fullwidth .rhap_main-controls {
-  display: flex !important;
-  align-items: center !important;
-  gap: 1rem !important;
+  margin-bottom: -1px;
 }
 
 /* Volume controls - right side */
 .custom-audio-player-fullwidth .rhap_volume-controls {
   display: flex !important;
   align-items: center !important;
-  gap: 0.5rem !important;
+  gap: 0.25rem !important;
 }
 
 .custom-audio-player-fullwidth .rhap_volume-container {
   display: flex !important;
   align-items: center !important;
-  gap: 0.5rem !important;
+  gap: 0.25rem !important;
 }
 
 .custom-audio-player-fullwidth .rhap_volume-bar-area {
@@ -694,6 +688,7 @@ html {
   height: 4px !important;
   border-radius: 2px !important;
   width: 100% !important;
+  margin: 0px 0px -12px -5px !important;
 }
 
 .custom-audio-player-fullwidth .rhap_volume-indicator {
@@ -711,6 +706,7 @@ html {
 .custom-audio-player-fullwidth .rhap_button-clear {
   color: rgba(255, 255, 255, 0.8) !important;
   transition: all 0.3s ease !important;
+  margin: 0 0 -11px 10px;
 }
 
 .custom-audio-player-fullwidth .rhap_button-clear:hover {
@@ -725,6 +721,6 @@ html {
 }
 
 .custom-audio-player-fullwidth .rhap_play-pause-button svg {
-  width: 2.5rem !important;
-  height: 2.5rem !important;
+  width: 1.25rem !important;
+  height: 1.25rem !important;
 }
