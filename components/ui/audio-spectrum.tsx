@@ -22,8 +22,8 @@ export function AudioSpectrum({
   maxFrequency = 20000,
   smoothing = 0.75,
   amplification = 1.5,
-  color = "rgba(168, 85, 247, 0.8)", // purple-500
-  lineColor = "rgba(192, 132, 252, 0.9)", // purple-400
+  color = "rgba(231, 209, 252, 0.8)", // lighter purple
+  lineColor = "rgba(247, 238, 255, 0.9)", // very light purple
   barWidth = 8,
   barGap = 4,
 }: AudioSpectrumProps) {
@@ -162,8 +162,8 @@ export function AudioSpectrum({
 
       // Draw bars
       for (let i = 0; i < barCount; i++) {
-        const intensity = Math.min(frequencyData[i], 1);
-        const barHeight = intensity * (canvas.height - 40); // Leave some margin
+        const intensity = Math.min(frequencyData[i], 1) * 0.3; // 70% less sensitive
+        const barHeight = Math.min(intensity * (canvas.height - 40), 200); // Cap at 200px
 
         const x = startX + i * totalBarWidth;
         const y = 20; // Start from top with some padding
