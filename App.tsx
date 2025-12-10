@@ -140,13 +140,11 @@ export default function App() {
       <div
         ref={containerRef}
         className="absolute inset-0 overflow-y-auto overflow-x-hidden scroll-smooth"
-        style={{ scrollSnapType: "y mandatory" }}
       >
         {unifiedProjects.map((project, index) => (
           <div
             key={project.id}
             className="w-full relative"
-            style={{ scrollSnapAlign: "start" }}
           >
             {project.type === "cs" ? (
               <SingleCSProject project={project} />

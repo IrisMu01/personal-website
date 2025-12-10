@@ -55,34 +55,34 @@ export const SingleMusicProject = ({ project, onAudioElement }: SingleMusicProje
                 ))}
               </div>
 
-          {/* Audio Player - Full Width, Custom Layout */}
-          <div className="w-full mb-0">
-            <AudioPlayer
-              key={project.id}
-              ref={playerRef}
-              src={project.audioUrl}
-              className="custom-audio-player-fullwidth"
-              showJumpControls={true}
-              showSkipControls={false}
-              customAdditionalControls={[]}
-              customVolumeControls={[]}
-              customProgressBarSection={[
-                "PROGRESS_BAR",
-              ]}
-              customControlsSection={[
-                "CURRENT_TIME",
-                "LOOP",
-                "REWIND",
-                "MAIN_CONTROLS",
-                "FORWARD",
-                <div key="spacer" style={{ flex: 1 }} />,
-                "VOLUME",
-                "DURATION",
-              ]}
-              layout="horizontal-reverse"
-              crossOrigin="anonymous"
-            />
-          </div>
+              {/* Audio Player - Full Width, Custom Layout */}
+              <div className="w-full mb-0">
+                <AudioPlayer
+                  key={project.id}
+                  ref={playerRef}
+                  src={project.audioUrl}
+                  className="custom-audio-player-fullwidth"
+                  showJumpControls={true}
+                  showSkipControls={false}
+                  customAdditionalControls={[]}
+                  customVolumeControls={[]}
+                  customProgressBarSection={[
+                    "PROGRESS_BAR",
+                  ]}
+                  customControlsSection={[
+                    "CURRENT_TIME",
+                    "LOOP",
+                    "REWIND",
+                    "MAIN_CONTROLS",
+                    "FORWARD",
+                    <div key="spacer" style={{ flex: 1 }} />,
+                    "VOLUME",
+                    "DURATION",
+                  ]}
+                  layout="horizontal-reverse"
+                  crossOrigin="anonymous"
+                />
+              </div>
 
               {/* Audio Spectrum Visualizer - Full Width, No Gap */}
               <AudioSpectrum
