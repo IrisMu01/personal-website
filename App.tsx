@@ -7,32 +7,53 @@ import { FluidParticles } from "./components/ui/fluid-particles";
 import { csProjects, musicProjects } from "./data/projects";
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState<"cs" | "music">("cs");
-  const [selectedCSProjectId, setSelectedCSProjectId] = useState(csProjects[0].id);
-  const [selectedMusicProjectId, setSelectedMusicProjectId] = useState(musicProjects[0].id);
+  // Unified project list combining CS and Music projects
+  const unifiedProjects = [
+    ...csProjects.map((p) => ({ ...p, type: "cs" as const })),
+    ...musicProjects.map((p) => ({ ...p, type: "music" as const })),
+  ];
+
+  const [currentProjectIndex, setCurrentProjectIndex] = useState(0);
+  const [isTransitioning, setIsTransitioning] = useState(false);
   const scrollAccumulatorRef = useRef(0);
   const isTransitioningRef = useRef(false);
 
-  // Get currently selected projects
-  const selectedCSProject = csProjects.find((p) => p.id === selectedCSProjectId) || csProjects[0];
-  const selectedMusicProject = musicProjects.find((p) => p.id === selectedMusicProjectId) || musicProjects[0];
+  // Get current project and derive active tab from it
+  const currentProject = unifiedProjects[currentProjectIndex];
+  const activeTab = currentProject.type;
 
-  // Prepare project list for selector
+  // Separate current project into CS or Music type
+  const selectedCSProject = currentProject.type === "cs" ? currentProject : csProjects[0];
+  const selectedMusicProject = currentProject.type === "music" ? currentProject : musicProjects[0];
+
+  // Prepare project list for selector (only show projects of current type)
   const currentProjects = activeTab === "cs"
     ? csProjects.map((p) => ({ id: p.id, title: p.title, tags: p.tags }))
     : musicProjects.map((p) => ({ id: p.id, title: p.title, tags: p.tags }));
 
-  const currentSelectedId = activeTab === "cs" ? selectedCSProjectId : selectedMusicProjectId;
+  const currentSelectedId = currentProject.id;
 
   const handleProjectSelect = (id: string) => {
-    if (activeTab === "cs") {
-      setSelectedCSProjectId(id);
-    } else {
-      setSelectedMusicProjectId(id);
+    // Find the index in the unified list
+    const newIndex = unifiedProjects.findIndex((p) => p.id === id);
+    if (newIndex !== -1) {
+      setIsTransitioning(true);
+      setCurrentProjectIndex(newIndex);
+      setTimeout(() => setIsTransitioning(false), 500);
     }
   };
 
-  // Scroll detection for project navigation
+  const setActiveTab = (tab: "cs" | "music") => {
+    // When tab is switched manually, go to the first project of that type
+    const newIndex = unifiedProjects.findIndex((p) => p.type === tab);
+    if (newIndex !== -1) {
+      setIsTransitioning(true);
+      setCurrentProjectIndex(newIndex);
+      setTimeout(() => setIsTransitioning(false), 500);
+    }
+  };
+
+  // Scroll detection for unified project navigation
   useEffect(() => {
     const handleWheel = (e: WheelEvent) => {
       if (isTransitioningRef.current) return;
@@ -40,26 +61,25 @@ export default function App() {
       scrollAccumulatorRef.current += e.deltaY;
 
       if (Math.abs(scrollAccumulatorRef.current) > 100) {
-        const currentProjects = activeTab === "cs" ? csProjects : musicProjects;
-        const currentId = activeTab === "cs" ? selectedCSProjectId : selectedMusicProjectId;
-        const currentIndex = currentProjects.findIndex((p) => p.id === currentId);
+        let newIndex = currentProjectIndex;
 
-        let newIndex = currentIndex;
-        if (scrollAccumulatorRef.current > 0 && currentIndex < currentProjects.length - 1) {
+        if (scrollAccumulatorRef.current > 0 && currentProjectIndex < unifiedProjects.length - 1) {
           // Scroll down - next project
-          newIndex = currentIndex + 1;
-        } else if (scrollAccumulatorRef.current < 0 && currentIndex > 0) {
+          newIndex = currentProjectIndex + 1;
+        } else if (scrollAccumulatorRef.current < 0 && currentProjectIndex > 0) {
           // Scroll up - previous project
-          newIndex = currentIndex - 1;
+          newIndex = currentProjectIndex - 1;
         }
 
-        if (newIndex !== currentIndex) {
+        if (newIndex !== currentProjectIndex) {
           isTransitioningRef.current = true;
-          handleProjectSelect(currentProjects[newIndex].id);
+          setIsTransitioning(true);
+          setCurrentProjectIndex(newIndex);
 
           // Reset after transition
           setTimeout(() => {
             isTransitioningRef.current = false;
+            setIsTransitioning(false);
           }, 500);
         }
 
@@ -69,7 +89,7 @@ export default function App() {
 
     window.addEventListener("wheel", handleWheel, { passive: true });
     return () => window.removeEventListener("wheel", handleWheel);
-  }, [activeTab, selectedCSProjectId, selectedMusicProjectId]);
+  }, [currentProjectIndex, unifiedProjects.length]);
 
   return (
     <div
@@ -101,12 +121,18 @@ export default function App() {
         onProjectSelect={handleProjectSelect}
       />
 
-      {/* Project Display */}
-      {activeTab === "cs" ? (
-        <SingleCSProject project={selectedCSProject} />
-      ) : (
-        <SingleMusicProject project={selectedMusicProject} />
-      )}
+      {/* Project Display with smooth transitions */}
+      <div
+        className={`transition-opacity duration-500 ${
+          isTransitioning ? "opacity-0" : "opacity-100"
+        }`}
+      >
+        {activeTab === "cs" ? (
+          <SingleCSProject project={selectedCSProject} />
+        ) : (
+          <SingleMusicProject project={selectedMusicProject} />
+        )}
+      </div>
     </div>
   );
 }
