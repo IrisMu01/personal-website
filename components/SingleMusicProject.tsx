@@ -13,20 +13,22 @@ export const SingleMusicProject = ({ project, onAudioElement }: SingleMusicProje
   const playerRef = useRef<AudioPlayer>(null);
   const [audioElement, setAudioElement] = useState<HTMLAudioElement | null>(null);
 
+  // Extract and register audio element when player is ready
   useEffect(() => {
-    // Get the actual audio element from the player and pass it to the callback
-    if (playerRef.current && playerRef.current.audio && playerRef.current.audio.current) {
-      const element = playerRef.current.audio.current;
-      setAudioElement(element);
-      onAudioElement?.(element);
-    }
+    const timer = setTimeout(() => {
+      if (playerRef.current && playerRef.current.audio && playerRef.current.audio.current) {
+        const element = playerRef.current.audio.current;
+        setAudioElement(element);
+        onAudioElement?.(element);
+      }
+    }, 100); // Small delay to ensure player is mounted
 
-    // Cleanup: set to null when component unmounts or project changes
     return () => {
+      clearTimeout(timer);
       setAudioElement(null);
       onAudioElement?.(null);
     };
-  }, [onAudioElement, project.audioUrl]);
+  }, [project.id]); // Only re-run when project changes
 
     return (
       <>
@@ -80,7 +82,14 @@ export const SingleMusicProject = ({ project, onAudioElement }: SingleMusicProje
                     "DURATION",
                   ]}
                   layout="horizontal-reverse"
-                  crossOrigin="anonymous"
+                  onLoadedMetadata={() => {
+                    // Ensure audio element is registered when metadata loads
+                    if (playerRef.current?.audio?.current) {
+                      const element = playerRef.current.audio.current;
+                      setAudioElement(element);
+                      onAudioElement?.(element);
+                    }
+                  }}
                 />
               </div>
 
