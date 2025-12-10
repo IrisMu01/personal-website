@@ -31,7 +31,7 @@ export const SingleMusicProject = ({ project, onAudioElement }: SingleMusicProje
     return (
       <div className="fixed inset-0 flex flex-col items-start justify-end z-10 pointer-events-none">
         {/* Bottom section with title, tags, audio player, and spectrum */}
-        <div className="w-full pointer-events-auto pb-8">
+        <div className="w-full pointer-events-auto pb-32">
           {/* Title left-aligned, larger */}
           <div className="mb-6 px-8">
             <h2 className="text-4xl font-bold text-purple-100">{project.title}</h2>

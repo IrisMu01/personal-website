@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { CredentialsSection } from "./components/CredentialsSection";
 import { ProjectSelector } from "./components/ProjectSelector";
 import { SingleCSProject } from "./components/SingleCSProject";
@@ -10,6 +10,8 @@ export default function App() {
   const [activeTab, setActiveTab] = useState<"cs" | "music">("cs");
   const [selectedCSProjectId, setSelectedCSProjectId] = useState(csProjects[0].id);
   const [selectedMusicProjectId, setSelectedMusicProjectId] = useState(musicProjects[0].id);
+  const scrollAccumulatorRef = useRef(0);
+  const isTransitioningRef = useRef(false);
 
   // Get currently selected projects
   const selectedCSProject = csProjects.find((p) => p.id === selectedCSProjectId) || csProjects[0];
@@ -30,6 +32,45 @@ export default function App() {
     }
   };
 
+  // Scroll detection for project navigation
+  useEffect(() => {
+    const handleWheel = (e: WheelEvent) => {
+      if (isTransitioningRef.current) return;
+
+      scrollAccumulatorRef.current += e.deltaY;
+
+      if (Math.abs(scrollAccumulatorRef.current) > 100) {
+        const currentProjects = activeTab === "cs" ? csProjects : musicProjects;
+        const currentId = activeTab === "cs" ? selectedCSProjectId : selectedMusicProjectId;
+        const currentIndex = currentProjects.findIndex((p) => p.id === currentId);
+
+        let newIndex = currentIndex;
+        if (scrollAccumulatorRef.current > 0 && currentIndex < currentProjects.length - 1) {
+          // Scroll down - next project
+          newIndex = currentIndex + 1;
+        } else if (scrollAccumulatorRef.current < 0 && currentIndex > 0) {
+          // Scroll up - previous project
+          newIndex = currentIndex - 1;
+        }
+
+        if (newIndex !== currentIndex) {
+          isTransitioningRef.current = true;
+          handleProjectSelect(currentProjects[newIndex].id);
+
+          // Reset after transition
+          setTimeout(() => {
+            isTransitioningRef.current = false;
+          }, 500);
+        }
+
+        scrollAccumulatorRef.current = 0;
+      }
+    };
+
+    window.addEventListener("wheel", handleWheel, { passive: true });
+    return () => window.removeEventListener("wheel", handleWheel);
+  }, [activeTab, selectedCSProjectId, selectedMusicProjectId]);
+
   return (
     <div
       className={`min-h-screen w-full fixed inset-0 transition-colors duration-700 overflow-hidden ${
@@ -46,7 +87,7 @@ export default function App() {
 
       {/* Gradient overlays for text protection */}
       <div className="absolute top-0 left-0 right-0 h-48 bg-gradient-to-b from-black to-transparent pointer-events-none z-10" />
-      <div className="absolute bottom-0 left-0 right-0 h-96 bg-gradient-to-t from-black via-black/80 to-transparent pointer-events-none z-10" />
+      <div className="absolute bottom-0 left-0 right-0 h-48 bg-gradient-to-t from-black to-transparent pointer-events-none z-10" />
 
       {/* Credentials - Top Left */}
       <CredentialsSection activeTab={activeTab} />
