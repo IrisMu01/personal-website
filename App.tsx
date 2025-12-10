@@ -41,6 +41,7 @@ export default function App() {
         className="absolute inset-0 pointer-events-none z-0"
         hueMin={activeTab === "cs" ? 180 : 270}
         hueMax={activeTab === "cs" ? 240 : 330}
+        lightness={activeTab === "cs" ? 60 : 75}
       />
 
       {/* Gradient overlays for text protection */}

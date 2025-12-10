@@ -4,6 +4,7 @@ interface FluidParticlesProps {
   className?: string;
   hueMin?: number;
   hueMax?: number;
+  lightness?: number;
 }
 
 interface Particle {
@@ -209,7 +210,7 @@ class FluidSolver {
   }
 }
 
-export function FluidParticles({ className = "", hueMin = 180, hueMax = 240 }: FluidParticlesProps) {
+export function FluidParticles({ className = "", hueMin = 180, hueMax = 240, lightness = 60 }: FluidParticlesProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const particlesRef = useRef<Particle[]>([]);
   const fluidSolverRef = useRef<FluidSolver | null>(null);
@@ -368,7 +369,7 @@ export function FluidParticles({ className = "", hueMin = 180, hueMax = 240 }: F
         const alpha = baseAlpha + speedBonus;
         const size = 1;
 
-        ctx.fillStyle = `hsla(${p.hue}, 80%, 60%, ${alpha})`;
+        ctx.fillStyle = `hsla(${p.hue}, 80%, ${lightness}%, ${alpha})`;
         ctx.beginPath();
         ctx.arc(p.x, p.y, size, 0, Math.PI * 2);
         ctx.fill();
@@ -389,7 +390,7 @@ export function FluidParticles({ className = "", hueMin = 180, hueMax = 240 }: F
       window.removeEventListener("resize", resizeCanvas);
       clearInterval(swirlInterval);
     };
-  }, [hueMin, hueMax]);
+  }, [hueMin, hueMax, lightness]);
 
   return (
     <canvas
