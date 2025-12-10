@@ -10,6 +10,8 @@ interface AudioSpectrumProps {
   amplification?: number;
   color?: string;
   lineColor?: string;
+  maxHeight?: number;
+  bottomMargin?: number;
 }
 
 export function AudioSpectrum({
@@ -22,6 +24,8 @@ export function AudioSpectrum({
   amplification = 1.5,
   color = "rgba(221, 185, 255, 0.9)", // very light purple
   lineColor = "rgba(197, 158, 233, 0.9)", // lighter purple
+  maxHeight = 400,
+  bottomMargin = 50,
 }: AudioSpectrumProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const analyserRef = useRef<AnalyserNode | null>(null);
@@ -129,7 +133,7 @@ export function AudioSpectrum({
     // Set canvas size
     const resizeCanvas = () => {
       canvas.width = window.innerWidth;
-      canvas.height = 300; // Fixed height for the spectrum
+      canvas.height = maxHeight; // Use parametrized max height
     };
     resizeCanvas();
     window.addEventListener("resize", resizeCanvas);
@@ -160,11 +164,11 @@ export function AudioSpectrum({
       // Draw bars
       for (let i = 0; i < barCount; i++) {
         const intensity = Math.min(frequencyData[i], 1) * 0.3; // 70% less sensitive
-        const barHeight = Math.min(intensity * (canvas.height - 40), 300); // Cap at 300px
+        const barHeight = Math.min(intensity * (canvas.height - bottomMargin), maxHeight - bottomMargin); // Cap at maxHeight minus bottom margin
 
         const x = startX + i * totalBarWidth;
-        const y = 20; // Start from top with some padding
-        const bottomY = y + barHeight;
+        const y = canvas.height - bottomMargin - barHeight; // Align to bottom with margin
+        const bottomY = canvas.height - bottomMargin;
 
         // Store bottom point
         bottomPoints.push({ x: x + barWidth / 2, y: bottomY });
@@ -203,7 +207,7 @@ export function AudioSpectrum({
       }
       window.removeEventListener("resize", resizeCanvas);
     };
-  }, [barCount, color, lineColor, minFrequency, maxFrequency, amplification]);
+  }, [barCount, color, lineColor, minFrequency, maxFrequency, amplification, maxHeight, bottomMargin]);
 
   return (
     <canvas

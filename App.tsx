@@ -39,9 +39,9 @@ export default function App() {
       {/* Particle Background - Changes color based on active tab */}
       <FluidParticles
         className="absolute inset-0 pointer-events-none z-0"
-        hueMin={activeTab === "cs" ? 180 : 270}
+        hueMin={activeTab === "cs" ? 180 : 250}
         hueMax={activeTab === "cs" ? 240 : 330}
-        lightness={activeTab === "cs" ? 60 : 75}
+        lightness={activeTab === "cs" ? 60 : 70}
       />
 
       {/* Gradient overlays for text protection */}
