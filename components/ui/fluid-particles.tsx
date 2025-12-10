@@ -2,6 +2,9 @@ import { useEffect, useRef } from "react";
 
 interface FluidParticlesProps {
   className?: string;
+  hueMin?: number;
+  hueMax?: number;
+  lightness?: number;
 }
 
 interface Particle {
@@ -207,7 +210,7 @@ class FluidSolver {
   }
 }
 
-export function FluidParticles({ className = "" }: FluidParticlesProps) {
+export function FluidParticles({ className = "", hueMin = 180, hueMax = 240, lightness = 60 }: FluidParticlesProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const particlesRef = useRef<Particle[]>([]);
   const fluidSolverRef = useRef<FluidSolver | null>(null);
@@ -258,7 +261,7 @@ export function FluidParticles({ className = "" }: FluidParticlesProps) {
         vx: 0,
         vy: 0,
         life: Math.random(),
-        hue: Math.random() * 60 + 180, // Cool tones: 180-240
+        hue: Math.random() * (hueMax - hueMin) + hueMin,
       });
     }
 
@@ -346,7 +349,7 @@ export function FluidParticles({ className = "" }: FluidParticlesProps) {
             vx: p.vx * 0.8, // Inherit some velocity
             vy: p.vy * 0.8,
             life: Math.random() * 0.25, // Start with low life for fade effect
-            hue: p.hue + (Math.random() - 0.5) * 10, // Similar hue with variation
+            hue: Math.max(hueMin, Math.min(hueMax, p.hue + (Math.random() - 0.5) * 10)), // Similar hue with variation, clamped
           });
         }
 
@@ -366,7 +369,7 @@ export function FluidParticles({ className = "" }: FluidParticlesProps) {
         const alpha = baseAlpha + speedBonus;
         const size = 1;
 
-        ctx.fillStyle = `hsla(${p.hue}, 80%, 60%, ${alpha})`;
+        ctx.fillStyle = `hsla(${p.hue}, 80%, ${lightness}%, ${alpha})`;
         ctx.beginPath();
         ctx.arc(p.x, p.y, size, 0, Math.PI * 2);
         ctx.fill();
@@ -387,7 +390,7 @@ export function FluidParticles({ className = "" }: FluidParticlesProps) {
       window.removeEventListener("resize", resizeCanvas);
       clearInterval(swirlInterval);
     };
-  }, []);
+  }, [hueMin, hueMax, lightness]);
 
   return (
     <canvas

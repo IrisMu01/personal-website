@@ -5,11 +5,12 @@ This document provides comprehensive guidance for AI assistants working on this 
 ## Project Overview
 
 This is a personal portfolio website for Iris Mu, showcasing both Computer Science and Music Production projects. The site features:
-- **Dual-theme interface**: CS (slate/dark blue) and Music (purple) themes
-- **Interactive drag navigation**: Users can drag to switch between project tabs
-- **Visual effects**: Particle animations, shooting stars, and click ripple effects
-- **Audio playback**: Custom-styled audio player for music projects
-- **Responsive design**: Mobile and desktop support
+- **Dual-theme interface**: CS and Music themes with dynamic color transitions
+- **Project selector**: Tab-based navigation to switch between CS and Music modes, with individual project selection
+- **Visual effects**: Fluid particle simulation with theme-reactive colors (blue/cyan for CS, purple/magenta for Music)
+- **Audio spectrum visualizer**: Real-time horizontal frequency spectrum with responsive bar widths
+- **Audio playback**: Custom full-width audio player with horizontal layout
+- **Responsive design**: All components adapt to screen size
 
 ## Tech Stack
 
@@ -48,10 +49,9 @@ This is a personal portfolio website for Iris Mu, showcasing both Computer Scien
 │
 ├── components/               # React components
 │   ├── CredentialsSection.tsx    # Header with profile info
-│   ├── ProjectDisplay.tsx        # Main project container with drag logic
-│   ├── CSProjectsTab.tsx         # Computer Science projects tab
-│   ├── MusicProjectsTab.tsx      # Music projects tab
-│   ├── DragHandles.tsx           # Drag interaction visual indicators
+│   ├── ProjectSelector.tsx       # Tab switcher and project selector
+│   ├── SingleCSProject.tsx       # Individual CS project display
+│   ├── SingleMusicProject.tsx    # Individual music project with visualizer
 │   │
 │   ├── figma/                    # Figma-related components
 │   │   └── ImageWithFallback.tsx
@@ -62,9 +62,13 @@ This is a personal portfolio website for Iris Mu, showcasing both Computer Scien
 │       ├── tabs.tsx
 │       ├── carousel.tsx
 │       ├── particles.tsx         # Custom particle background
-│       ├── shooting-stars.tsx    # Custom shooting stars effect
+│       ├── fluid-particles.tsx   # Navier-Stokes fluid simulation background
+│       ├── audio-spectrum.tsx    # Horizontal audio spectrum visualizer
 │       ├── skeleton.tsx
 │       └── ...
+│
+├── data/
+│   └── projects.ts           # CS and Music project data with metadata
 │
 ├── styles/
 │   └── globals.css           # Global styles, CSS variables, theme tokens
@@ -90,9 +94,8 @@ npm run preview   # Preview production build locally
 ```
 
 ### Git Workflow
-- **Current branch**: `claude/claude-md-migxxpc30wyv2w3h-01PDaDSUdTTP2KfYXjupGSMB`
 - **Commit style**: Concise, descriptive messages (see git log)
-  - Examples: "Adjust music tab styling", "Add content", "Change build script"
+  - Examples: "Replace 3D fountain with horizontal audio spectrum visualizer", "Adjust music tab styling", "Add content"
 - Always commit meaningful changes with clear messages
 - Push to the specified claude/* branch using `git push -u origin <branch-name>`
 
@@ -113,9 +116,9 @@ npm run preview   # Preview production build locally
 ### Component Structure
 
 #### Naming Conventions
-- **Components**: PascalCase (e.g., `CredentialsSection`, `ProjectDisplay`)
+- **Components**: PascalCase (e.g., `CredentialsSection`, `ProjectSelector`, `SingleMusicProject`)
 - **Files**: Match component name with `.tsx` extension
-- **Props interfaces**: Suffix with `Props` (e.g., `ProjectDisplayProps`)
+- **Props interfaces**: Suffix with `Props` (e.g., `SingleMusicProjectProps`)
 
 #### Component Pattern
 ```typescript
@@ -214,53 +217,112 @@ className={cn("base", conditional && "extra")}
 ## Key Features & Patterns
 
 ### 1. Dual-Theme System
-The entire app toggles between two themes based on `activeTab` state:
+The entire app toggles between two themes based on `activeTab` state, with dynamic particle color transitions:
 ```typescript
 const [activeTab, setActiveTab] = useState<"cs" | "music">("cs");
 
-// Background color
-className={activeTab === "cs" ? "bg-slate-950" : "bg-purple-950"}
-
-// Particle color
-color={activeTab === "cs" ? "#ffe5db" : "#dbe8ff"}
+// Fluid particle colors change based on active tab
+<FluidParticles
+  hueMin={activeTab === "cs" ? 180 : 270}
+  hueMax={activeTab === "cs" ? 240 : 330}
+  lightness={activeTab === "cs" ? 60 : 75}
+/>
 ```
 
-### 2. Drag Navigation
-Implemented in `ProjectDisplay.tsx`:
-- Touch and mouse event handling
-- Friction effect (drag moves at half speed)
-- Threshold-based tab switching (100px)
-- Visual feedback during drag
+- **CS theme**: Blue/cyan particles (hue 180-240, lightness 60%)
+- **Music theme**: Purple/magenta particles (hue 270-330, lightness 75%)
+
+### 2. Project Navigation
+The app uses a selector-based navigation system:
+- **Tab switching**: CS vs Music mode via `ProjectSelector`
+- **Project selection**: Dropdown to choose individual projects within each category
+- **State management**: Separate state for CS and Music project selections
+- Projects are stored in `data/projects.ts` with metadata (title, description, tags, etc.)
 
 ```typescript
-const DRAG_THRESHOLD = 100; // pixels to drag before switching
-// Drag offset applied with friction
-setDragOffset(offset / 2);
+const [activeTab, setActiveTab] = useState<"cs" | "music">("cs");
+const [selectedCSProjectId, setSelectedCSProjectId] = useState(csProjects[0].id);
+const [selectedMusicProjectId, setSelectedMusicProjectId] = useState(musicProjects[0].id);
 ```
 
-### 3. Interactive Effects
+### 3. Audio Spectrum Visualizer
+Implemented in `components/ui/audio-spectrum.tsx`:
+- **Real-time frequency analysis**: Uses Web Audio API with AnalyserNode (FFT size: 2048)
+- **Responsive layout**: Bars span full page width, automatically adapting to screen size
+- **Bottom-aligned bars**: Bars grow upward from a baseline with configurable bottom margin
+- **Parametrizable**:
+  - `barCount`: Number of frequency bars (default: 64, typically 128-256)
+  - `minFrequency` / `maxFrequency`: Frequency range (20 Hz - 20 kHz)
+  - `smoothing`: Audio smoothing constant (0-1, default: 0.75)
+  - `amplification`: Loudness multiplier (default: 1.5)
+  - `color` / `lineColor`: Bar and connecting line colors (RGBA strings)
+  - `maxHeight`: Maximum canvas height (default: 400px)
+  - `bottomMargin`: Space below bars (default: 50px)
+- **Linear frequency mapping**: Equal frequency spacing across all bars
+- **Responsive bar widths**: Bar width and gap calculated from `barCount` and screen width
+  - Available width divided evenly by bar count
+  - Gap is 25% of total bar width, bar is 75%
+- **Connecting line**: Drawn between bar bottom points
+- Integrates with `react-h5-audio-player` audio element
 
-#### Click Ripple
-Global ripple effect on any page click (App.tsx:11-28):
 ```typescript
-const createRipple = (e: React.MouseEvent) => {
-  const ripple = document.createElement("span");
-  ripple.className = "ripple";
-  // Position and animate
-};
+<AudioSpectrum
+  audioElement={audioElement}
+  barCount={256}
+  minFrequency={20}
+  maxFrequency={20000}
+  smoothing={0.75}
+  amplification={1.5}
+  maxHeight={400}
+  bottomMargin={50}
+/>
 ```
 
-#### Particles & Shooting Stars
-- `Particles` component: Animated background particles
-- `ShootingStars` component: Header animation effect
-- Both use `pointer-events-none` to prevent interaction blocking
+### 4. Interactive Effects
 
-### 4. Custom Audio Player
-Heavily customized `react-h5-audio-player` with custom CSS in `globals.css` (lines 216-407):
-- Custom colors matching theme
-- Modified layout (vertical stacking)
-- Styled progress bars and controls
-- Pink accent color (`rgba(236, 72, 153)`)
+#### Fluid Particle Background
+- `FluidParticles` component: Navier-Stokes fluid simulation
+- Creates dynamic, swirling particle effects
+- 30,000+ particles following fluid dynamics with trail particle spawning
+- **Theme-reactive colors**: Changes hue and lightness based on active tab
+  - `hueMin` / `hueMax`: HSL hue range (0-360)
+  - `lightness`: HSL lightness percentage (0-100)
+  - CS tab: Blue/cyan tones (180-240 hue, 60% lightness)
+  - Music tab: Purple/magenta tones (270-330 hue, 75% lightness)
+- Particles reinitialize when color parameters change
+- Uses `pointer-events-none` to prevent interaction blocking
+
+```typescript
+<FluidParticles
+  hueMin={270}
+  hueMax={330}
+  lightness={75}
+/>
+```
+
+### 5. Custom Audio Player
+Heavily customized `react-h5-audio-player` with two CSS variants in `globals.css`:
+
+**Full-Width Layout** (`.custom-audio-player-fullwidth`):
+- **Horizontal-reverse layout**: Progress bar at bottom, controls above
+- **Full width**: Spans 100% of screen width
+- **Custom control arrangement**:
+  - Left side: Current time, loop, rewind, play/pause, forward
+  - Flex spacer pushes controls to edges
+  - Right side: Volume, duration
+- **Zero gap**: Progress bar sits directly above spectrum visualizer
+- Uses `customControlsSection` and `customProgressBarSection` arrays
+
+**Minimal Layout** (`.custom-audio-player-minimal`):
+- Two-row flex layout
+- Progress bar on first row, controls centered on second row
+- More compact design for smaller contexts
+
+Both variants share common styles via grouped selectors:
+- Purple/pink gradient progress bars
+- Custom button hover states
+- Transparent backgrounds
+- Consistent spacing and sizing
 
 ## UI Component Library
 
@@ -273,7 +335,7 @@ The `components/ui/` directory contains 30+ pre-built components from shadcn/ui:
 - **Feedback**: Alert, Progress, Skeleton, Toast (Sonner)
 - **Data**: Calendar, Command, Table, Chart (Recharts)
 - **Media**: Avatar, Carousel (Embla)
-- **Custom**: Particles, Shooting Stars
+- **Custom**: Particles, Fluid Particles, Audio Spectrum
 
 ### Using UI Components
 ```typescript
@@ -348,11 +410,12 @@ import { Button } from "./components/ui/button";
 
 1. **Breaking theme system**: Always consider both `cs` and `music` themes
 2. **Hardcoded colors**: Use CSS variables and Tailwind tokens
-3. **Pointer events**: Remember particles/stars use `pointer-events-none`
+3. **Pointer events**: Remember particles use `pointer-events-none`
 4. **Import paths**: Don't mix `@/` and relative imports
 5. **Type safety**: Don't bypass TypeScript errors with `as any`
-6. **Mobile responsiveness**: Test drag interactions on touch devices
+6. **Mobile responsiveness**: Test on various screen sizes
 7. **CSS specificity**: Avoid `!important` unless absolutely necessary
+8. **Audio context**: Web Audio API requires user interaction to start; handle accordingly
 
 ## Attributions & Licenses
 
@@ -383,5 +446,5 @@ Always prioritize consistency with existing code over introducing new patterns u
 
 ---
 
-**Last updated**: 2025-11-27
-**Codebase version**: Based on commit `d66f1cd` (Adjust music tab styling)
+**Last updated**: 2025-12-10
+**Codebase version**: Horizontal spectrum visualizer with responsive design and theme-reactive fluid particles

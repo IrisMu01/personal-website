@@ -1,17 +1,15 @@
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { CredentialsSection } from "./components/CredentialsSection";
 import { ProjectSelector } from "./components/ProjectSelector";
 import { SingleCSProject } from "./components/SingleCSProject";
 import { SingleMusicProject } from "./components/SingleMusicProject";
 import { FluidParticles } from "./components/ui/fluid-particles";
-import { AudioReactiveParticles } from "./components/ui/audio-reactive-particles";
 import { csProjects, musicProjects } from "./data/projects";
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<"cs" | "music">("cs");
   const [selectedCSProjectId, setSelectedCSProjectId] = useState(csProjects[0].id);
   const [selectedMusicProjectId, setSelectedMusicProjectId] = useState(musicProjects[0].id);
-  const [audioElement, setAudioElement] = useState<HTMLAudioElement | null>(null);
 
   // Get currently selected projects
   const selectedCSProject = csProjects.find((p) => p.id === selectedCSProjectId) || csProjects[0];
@@ -38,15 +36,13 @@ export default function App() {
         activeTab === "cs" ? "bg-black" : "bg-black"
       }`}
     >
-      {/* Particle Background - Different for each tab */}
-      {activeTab === "cs" ? (
-        <FluidParticles className="absolute inset-0 pointer-events-none z-0" />
-      ) : (
-        <AudioReactiveParticles
-          className="absolute inset-0 pointer-events-none z-0"
-          audioElement={audioElement}
-        />
-      )}
+      {/* Particle Background - Changes color based on active tab */}
+      <FluidParticles
+        className="absolute inset-0 pointer-events-none z-0"
+        hueMin={activeTab === "cs" ? 180 : 250}
+        hueMax={activeTab === "cs" ? 240 : 330}
+        lightness={activeTab === "cs" ? 60 : 70}
+      />
 
       {/* Gradient overlays for text protection */}
       <div className="absolute top-0 left-0 right-0 h-48 bg-gradient-to-b from-black to-transparent pointer-events-none z-10" />
@@ -68,10 +64,7 @@ export default function App() {
       {activeTab === "cs" ? (
         <SingleCSProject project={selectedCSProject} />
       ) : (
-        <SingleMusicProject
-          project={selectedMusicProject}
-          onAudioElement={setAudioElement}
-        />
+        <SingleMusicProject project={selectedMusicProject} />
       )}
     </div>
   );

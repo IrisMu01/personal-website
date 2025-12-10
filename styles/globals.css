@@ -253,7 +253,7 @@ html {
   /* Current time - align left */
   .rhap_current-time {
     color: rgba(255, 255, 255, 0.9) !important;
-    font-size: 0.875rem !important;
+    font-size: 1rem !important;
     min-width: 45px !important;
     text-align: left !important;
     flex-shrink: 0 !important;
@@ -275,6 +275,7 @@ html {
     align-items: center !important;
     height: 20px !important;
     cursor: pointer !important;
+    margin: 0 0 -39px 0;
   }
   
   /* Progress bar background */
@@ -316,6 +317,7 @@ html {
     justify-content: space-between !important;
     align-items: center !important;
     width: 100% !important;
+    margin: 0px 5px -15px 5px!important;
   }
   
   /* Loop button - align left */
@@ -328,11 +330,7 @@ html {
   
   /* Main controls (rewind, play, forward) - center */
   .rhap_main-controls {
-    display: flex !important;
-    align-items: center !important;
-    gap: 0.5rem !important;
-    justify-content: center !important;
-    flex: 1 !important;
+    margin-bottom: -1px;
   }
   
   /* Volume controls - align right */
@@ -378,6 +376,7 @@ html {
     height: 6px !important;
     border-radius: 3px !important;
     width: 100% !important;
+    margin: 0px 0px -12px -5px !important;
   }
   
   /* Volume indicator (the draggable dot) */
@@ -395,7 +394,7 @@ html {
   /* All buttons */
   .rhap_button-clear {
     color: rgba(255, 255, 255, 0.9) !important;
-    font-size: 1.25rem !important;
+    font-size: 1rem !important;
   }
   
   .rhap_button-clear:hover {
@@ -403,85 +402,34 @@ html {
   }
   
   .rhap_button-clear svg {
-    width: 1.25rem !important;
-    height: 1.25rem !important;
+    width: 1.5rem !important;
+    height: 1.5rem !important;
   }
   
-  /* Play button - make it larger */
+  /* Play button */
   .rhap_play-pause-button svg {
-    width: 2rem !important;
-    height: 2rem !important;
+    width: 1.5rem !important;
+    height: 1.5rem !important;
   }
 
-/* Minimalist Audio Player Styles for Apple-style UI */
-.custom-audio-player-minimal {
+/* Base Audio Player Styles - Shared by all custom players */
+.custom-audio-player-minimal,
+.custom-audio-player-fullwidth {
   background: transparent !important;
   box-shadow: none !important;
   border: none !important;
   padding: 0 !important;
 }
 
-.custom-audio-player-minimal .rhap_container {
+.custom-audio-player-minimal .rhap_container,
+.custom-audio-player-fullwidth .rhap_container {
   background: transparent !important;
   padding: 0 !important;
 }
 
-/* Two-row layout using flex-wrap */
-.custom-audio-player-minimal .rhap_stacked {
-  display: flex !important;
-  flex-wrap: wrap !important;
-  gap: 1rem !important;
-  align-items: center !important;
-}
-
-/* Progress section - full width on first row */
-.custom-audio-player-minimal .rhap_progress-section {
-  display: flex !important;
-  align-items: center !important;
-  gap: 0.75rem !important;
-  flex-basis: 100% !important;
-  order: 0 !important;
-}
-
-/* Second row container using remaining space */
-/* Loop button on the very left */
-.custom-audio-player-minimal .rhap_additional-controls {
-  display: flex !important;
-  align-items: center !important;
-  gap: 0.5rem !important;
-  order: 1 !important;
-  flex: 0 0 auto !important;
-}
-
-/* Main controls (play/pause/rewind/forward) centered */
-.custom-audio-player-minimal .rhap_main-controls {
-  display: flex !important;
-  align-items: center !important;
-  gap: 1rem !important;
-  order: 2 !important;
-  flex: 1 1 auto !important;
-  justify-content: center !important;
-}
-
-/* Volume controls on the very right */
-.custom-audio-player-minimal .rhap_volume-controls {
-  display: flex !important;
-  align-items: center !important;
-  gap: 0.5rem !important;
-  order: 3 !important;
-  flex: 0 0 auto !important;
-}
-
-/* Time displays */
-.custom-audio-player-minimal .rhap_current-time,
-.custom-audio-player-minimal .rhap_total-time {
-  color: rgba(255, 255, 255, 0.7) !important;
-  font-size: 0.875rem !important;
-  min-width: 45px !important;
-}
-
-/* Progress bar */
-.custom-audio-player-minimal .rhap_progress-container {
+/* Shared progress bar styles */
+.custom-audio-player-minimal .rhap_progress-container,
+.custom-audio-player-fullwidth .rhap_progress-container {
   flex: 1 !important;
   display: flex !important;
   align-items: center !important;
@@ -489,7 +437,8 @@ html {
   cursor: pointer !important;
 }
 
-.custom-audio-player-minimal .rhap_progress-bar {
+.custom-audio-player-minimal .rhap_progress-bar,
+.custom-audio-player-fullwidth .rhap_progress-bar {
   position: relative !important;
   background-color: rgba(255, 255, 255, 0.15) !important;
   height: 4px !important;
@@ -497,13 +446,15 @@ html {
   width: 100% !important;
 }
 
-.custom-audio-player-minimal .rhap_progress-filled {
+.custom-audio-player-minimal .rhap_progress-filled,
+.custom-audio-player-fullwidth .rhap_progress-filled {
   background: linear-gradient(90deg, rgba(167, 139, 250, 0.8), rgba(236, 72, 153, 0.8)) !important;
   height: 4px !important;
   border-radius: 2px !important;
 }
 
-.custom-audio-player-minimal .rhap_progress-indicator {
+.custom-audio-player-minimal .rhap_progress-indicator,
+.custom-audio-player-fullwidth .rhap_progress-indicator {
   background: linear-gradient(135deg, rgba(167, 139, 250, 1), rgba(236, 72, 153, 1)) !important;
   width: 14px !important;
   height: 14px !important;
@@ -514,18 +465,35 @@ html {
   box-shadow: 0 0 8px rgba(236, 72, 153, 0.5) !important;
 }
 
-.custom-audio-player-minimal .rhap_download-progress {
+.custom-audio-player-minimal .rhap_download-progress,
+.custom-audio-player-fullwidth .rhap_download-progress {
   display: none !important;
 }
 
-/* Volume controls */
-.custom-audio-player-minimal .rhap_volume-container {
-  display: flex !important;
-  align-items: center !important;
-  gap: 0.5rem !important;
+/* Shared time display styles */
+.custom-audio-player-minimal .rhap_current-time,
+.custom-audio-player-minimal .rhap_total-time,
+.custom-audio-player-fullwidth .rhap_current-time,
+.custom-audio-player-fullwidth .rhap_total-time {
+  color: rgba(255, 255, 255, 0.7) !important;
+  min-width: 45px !important;
 }
 
-.custom-audio-player-minimal .rhap_volume-bar-area {
+/* Shared volume controls */
+.custom-audio-player-minimal .rhap_volume-controls,
+.custom-audio-player-fullwidth .rhap_volume-controls {
+  display: flex !important;
+  align-items: center !important;
+}
+
+.custom-audio-player-minimal .rhap_volume-container,
+.custom-audio-player-fullwidth .rhap_volume-container {
+  display: flex !important;
+  align-items: center !important;
+}
+
+.custom-audio-player-minimal .rhap_volume-bar-area,
+.custom-audio-player-fullwidth .rhap_volume-bar-area {
   width: 80px !important;
   height: 24px !important;
   display: flex !important;
@@ -533,15 +501,18 @@ html {
   cursor: pointer !important;
 }
 
-.custom-audio-player-minimal .rhap_volume-bar {
+.custom-audio-player-minimal .rhap_volume-bar,
+.custom-audio-player-fullwidth .rhap_volume-bar {
   position: relative !important;
   background-color: rgba(255, 255, 255, 0.15) !important;
   height: 4px !important;
   border-radius: 2px !important;
   width: 100% !important;
+  margin: 0px 0px -12px 0 !important;
 }
 
-.custom-audio-player-minimal .rhap_volume-indicator {
+.custom-audio-player-minimal .rhap_volume-indicator,
+.custom-audio-player-fullwidth .rhap_volume-indicator {
   background: linear-gradient(135deg, rgba(167, 139, 250, 1), rgba(236, 72, 153, 1)) !important;
   width: 12px !important;
   height: 12px !important;
@@ -552,24 +523,141 @@ html {
   box-shadow: 0 0 6px rgba(236, 72, 153, 0.5) !important;
 }
 
-/* Buttons */
-.custom-audio-player-minimal .rhap_button-clear {
+/* Shared button styles */
+.custom-audio-player-minimal .rhap_button-clear,
+.custom-audio-player-fullwidth .rhap_button-clear {
   color: rgba(255, 255, 255, 0.8) !important;
   transition: all 0.3s ease !important;
 }
 
-.custom-audio-player-minimal .rhap_button-clear:hover {
+.custom-audio-player-minimal .rhap_button-clear:hover,
+.custom-audio-player-fullwidth .rhap_button-clear:hover {
   color: rgba(255, 255, 255, 1) !important;
   transform: scale(1.1) !important;
 }
 
-.custom-audio-player-minimal .rhap_button-clear svg {
-  width: 1.25rem !important;
-  height: 1.25rem !important;
+.custom-audio-player-minimal .rhap_button-clear svg,
+.custom-audio-player-fullwidth .rhap_button-clear svg {
   filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3)) !important;
 }
 
+/* Minimalist Audio Player - Specific Styles */
+.custom-audio-player-minimal .rhap_stacked {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 1rem !important;
+  align-items: center !important;
+}
+
+.custom-audio-player-minimal .rhap_progress-section {
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.75rem !important;
+  flex-basis: 100% !important;
+  order: 0 !important;
+}
+
+.custom-audio-player-minimal .rhap_additional-controls {
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.5rem !important;
+  order: 1 !important;
+  flex: 0 0 auto !important;
+}
+
+.custom-audio-player-minimal .rhap_main-controls {
+  margin-bottom: -1px;
+}
+
+.custom-audio-player-minimal .rhap_volume-controls {
+  gap: 0.5rem !important;
+  order: 3 !important;
+  flex: 0 0 auto !important;
+}
+
+.custom-audio-player-minimal .rhap_current-time,
+.custom-audio-player-minimal .rhap_total-time {
+  font-size: 0.875rem !important;
+}
+
+.custom-audio-player-minimal .rhap_volume-container {
+  gap: 0.5rem !important;
+}
+
+.custom-audio-player-minimal .rhap_button-clear svg {
+  width: 1.5rem !important;
+  height: 1.5rem !important;
+}
+
 .custom-audio-player-minimal .rhap_play-pause-button svg {
-  width: 2.5rem !important;
-  height: 2.5rem !important;
+  width: 1.5rem !important;
+  height: 1.5rem !important;
+}
+
+/* Full-Width Audio Player - Specific Styles */
+.custom-audio-player-fullwidth {
+  width: 100% !important;
+}
+
+.custom-audio-player-fullwidth .rhap_container {
+  width: 100% !important;
+}
+
+.custom-audio-player-fullwidth .rhap_horizontal-reverse {
+  display: flex !important;
+  flex-direction: column-reverse !important;
+  width: 100% !important;
+}
+
+.custom-audio-player-fullwidth .rhap_progress-section {
+  display: flex !important;
+  align-items: center !important;
+  width: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.custom-audio-player-fullwidth .rhap_controls-section {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  width: calc(100% - 10px) !important;
+  margin: 0px 5px -15px 5px !important;
+}
+
+.custom-audio-player-fullwidth .rhap_current-time {
+  font-size: 1rem !important;
+  margin-bottom: -15px;
+}
+
+.custom-audio-player-fullwidth .rhap_total-time {
+  font-size: 1rem !important;
+  margin-bottom: -15px;
+  margin-left: 5px;
+}
+
+.custom-audio-player-fullwidth .rhap_main-controls {
+  margin-bottom: -1px;
+}
+
+.custom-audio-player-fullwidth .rhap_volume-controls {
+  gap: 0.25rem !important;
+}
+
+.custom-audio-player-fullwidth .rhap_volume-container {
+  gap: 0.25rem !important;
+}
+
+.custom-audio-player-fullwidth .rhap_button-clear {
+  margin: 0 0 -11px 10px;
+}
+
+.custom-audio-player-fullwidth .rhap_button-clear svg {
+  width: 1.25rem !important;
+  height: 1.25rem !important;
+}
+
+.custom-audio-player-fullwidth .rhap_play-pause-button svg {
+  width: 1.25rem !important;
+  height: 1.25rem !important;
 }
