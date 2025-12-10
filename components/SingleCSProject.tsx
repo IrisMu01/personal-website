@@ -6,7 +6,10 @@ interface SingleCSProjectProps {
 
 export function SingleCSProject({ project }: SingleCSProjectProps) {
   return (
-    <div className="h-full w-full flex flex-col items-start justify-end pointer-events-none">
+    <div className="h-full w-full flex flex-col justify-between pointer-events-none">
+      {/* Spacer for top credentials section */}
+      <div className="h-32" />
+
       {/* Bottom section with title, tags, description, and video */}
       <div className="w-full pointer-events-auto pb-32">
         {/* Title - left-aligned, larger, consistent with music projects */}

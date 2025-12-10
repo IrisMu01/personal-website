@@ -17,10 +17,20 @@ export default function App() {
   const scrollAccumulatorRef = useRef(0);
   const isScrollingRef = useRef(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  const audioElementsRef = useRef<Map<string, HTMLAudioElement>>(new Map());
 
   // Get current project and derive active tab from it
   const currentProject = unifiedProjects[currentProjectIndex];
   const activeTab = currentProject.type;
+
+  // Function to pause all audio except the current one
+  const pauseOtherAudio = (currentProjectId: string) => {
+    audioElementsRef.current.forEach((audio, projectId) => {
+      if (projectId !== currentProjectId && !audio.paused) {
+        audio.pause();
+      }
+    });
+  };
 
   // Prepare project list for selector (only show projects of current type)
   const currentProjects = activeTab === "cs"
@@ -36,6 +46,10 @@ export default function App() {
         isScrollingRef.current = true;
         targetElement.scrollIntoView({ behavior: "smooth", block: "start" });
         setCurrentProjectIndex(index);
+
+        // Pause audio when scrolling away from music projects
+        const newProject = unifiedProjects[index];
+        pauseOtherAudio(newProject.id);
 
         // Reset scrolling flag after animation
         setTimeout(() => {
@@ -137,7 +151,16 @@ export default function App() {
             {project.type === "cs" ? (
               <SingleCSProject project={project} />
             ) : (
-              <SingleMusicProject project={project} />
+              <SingleMusicProject
+                project={project}
+                onAudioElement={(element) => {
+                  if (element) {
+                    audioElementsRef.current.set(project.id, element);
+                  } else {
+                    audioElementsRef.current.delete(project.id);
+                  }
+                }}
+              />
             )}
           </div>
         ))}
