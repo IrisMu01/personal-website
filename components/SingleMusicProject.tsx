@@ -29,7 +29,7 @@ export const SingleMusicProject = ({ project, onAudioElement }: SingleMusicProje
   }, [onAudioElement, project.audioUrl]);
 
     return (
-      <div className="fixed inset-0 flex flex-col items-start justify-end z-10 pointer-events-none">
+      <div className="h-full w-full flex flex-col items-start justify-end pointer-events-none">
         {/* Bottom section with title, tags, audio player, and spectrum */}
         <div className="w-full pointer-events-auto pb-32">
           {/* Title left-aligned, larger */}
