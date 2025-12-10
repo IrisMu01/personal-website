@@ -5,12 +5,12 @@ This document provides comprehensive guidance for AI assistants working on this 
 ## Project Overview
 
 This is a personal portfolio website for Iris Mu, showcasing both Computer Science and Music Production projects. The site features:
-- **Dual-theme interface**: CS (slate/dark blue) and Music (purple) themes
+- **Dual-theme interface**: CS and Music themes with dynamic color transitions
 - **Project selector**: Tab-based navigation to switch between CS and Music modes, with individual project selection
-- **Visual effects**: Particle animations (fluid simulation for CS, static for Music)
-- **Audio spectrum visualizer**: Real-time horizontal frequency spectrum for music projects
-- **Audio playback**: Custom-styled audio player for music projects
-- **Responsive design**: Mobile and desktop support
+- **Visual effects**: Fluid particle simulation with theme-reactive colors (blue/cyan for CS, purple/magenta for Music)
+- **Audio spectrum visualizer**: Real-time horizontal frequency spectrum with responsive bar widths
+- **Audio playback**: Custom full-width audio player with horizontal layout
+- **Responsive design**: All components adapt to screen size
 
 ## Tech Stack
 
@@ -217,16 +217,20 @@ className={cn("base", conditional && "extra")}
 ## Key Features & Patterns
 
 ### 1. Dual-Theme System
-The entire app toggles between two themes based on `activeTab` state:
+The entire app toggles between two themes based on `activeTab` state, with dynamic particle color transitions:
 ```typescript
 const [activeTab, setActiveTab] = useState<"cs" | "music">("cs");
 
-// Background color
-className={activeTab === "cs" ? "bg-slate-950" : "bg-purple-950"}
-
-// Particle color
-color={activeTab === "cs" ? "#ffe5db" : "#dbe8ff"}
+// Fluid particle colors change based on active tab
+<FluidParticles
+  hueMin={activeTab === "cs" ? 180 : 270}
+  hueMax={activeTab === "cs" ? 240 : 330}
+  lightness={activeTab === "cs" ? 60 : 75}
+/>
 ```
+
+- **CS theme**: Blue/cyan particles (hue 180-240, lightness 60%)
+- **Music theme**: Purple/magenta particles (hue 270-330, lightness 75%)
 
 ### 2. Project Navigation
 The app uses a selector-based navigation system:
@@ -243,26 +247,34 @@ const [selectedMusicProjectId, setSelectedMusicProjectId] = useState(musicProjec
 
 ### 3. Audio Spectrum Visualizer
 Implemented in `components/ui/audio-spectrum.tsx`:
-- **Real-time frequency analysis**: Uses Web Audio API with AnalyserNode
-- **Horizontal layout**: Bars span full page width, growing downward
+- **Real-time frequency analysis**: Uses Web Audio API with AnalyserNode (FFT size: 2048)
+- **Responsive layout**: Bars span full page width, automatically adapting to screen size
+- **Bottom-aligned bars**: Bars grow upward from a baseline with configurable bottom margin
 - **Parametrizable**:
-  - `barCount`: Number of frequency bars (default: 128)
+  - `barCount`: Number of frequency bars (default: 64, typically 128-256)
   - `minFrequency` / `maxFrequency`: Frequency range (20 Hz - 20 kHz)
-  - `smoothing`: Audio smoothing constant (0-1)
-  - `amplification`: Loudness multiplier
-  - `barWidth` / `barGap`: Visual sizing
-- **Logarithmic frequency mapping**: Better musical representation
+  - `smoothing`: Audio smoothing constant (0-1, default: 0.75)
+  - `amplification`: Loudness multiplier (default: 1.5)
+  - `color` / `lineColor`: Bar and connecting line colors (RGBA strings)
+  - `maxHeight`: Maximum canvas height (default: 400px)
+  - `bottomMargin`: Space below bars (default: 50px)
+- **Linear frequency mapping**: Equal frequency spacing across all bars
+- **Responsive bar widths**: Bar width and gap calculated from `barCount` and screen width
+  - Available width divided evenly by bar count
+  - Gap is 25% of total bar width, bar is 75%
 - **Connecting line**: Drawn between bar bottom points
 - Integrates with `react-h5-audio-player` audio element
 
 ```typescript
 <AudioSpectrum
   audioElement={audioElement}
-  barCount={128}
+  barCount={256}
   minFrequency={20}
   maxFrequency={20000}
-  smoothing={0.8}
-  amplification={1.8}
+  smoothing={0.75}
+  amplification={1.5}
+  maxHeight={400}
+  bottomMargin={50}
 />
 ```
 
@@ -271,15 +283,46 @@ Implemented in `components/ui/audio-spectrum.tsx`:
 #### Fluid Particle Background
 - `FluidParticles` component: Navier-Stokes fluid simulation
 - Creates dynamic, swirling particle effects
-- 30,000+ particles following fluid dynamics
+- 30,000+ particles following fluid dynamics with trail particle spawning
+- **Theme-reactive colors**: Changes hue and lightness based on active tab
+  - `hueMin` / `hueMax`: HSL hue range (0-360)
+  - `lightness`: HSL lightness percentage (0-100)
+  - CS tab: Blue/cyan tones (180-240 hue, 60% lightness)
+  - Music tab: Purple/magenta tones (270-330 hue, 75% lightness)
+- Particles reinitialize when color parameters change
 - Uses `pointer-events-none` to prevent interaction blocking
 
+```typescript
+<FluidParticles
+  hueMin={270}
+  hueMax={330}
+  lightness={75}
+/>
+```
+
 ### 5. Custom Audio Player
-Heavily customized `react-h5-audio-player` with custom CSS in `globals.css` (lines 216-407):
-- Custom colors matching theme
-- Modified layout (vertical stacking)
-- Styled progress bars and controls
-- Pink accent color (`rgba(236, 72, 153)`)
+Heavily customized `react-h5-audio-player` with two CSS variants in `globals.css`:
+
+**Full-Width Layout** (`.custom-audio-player-fullwidth`):
+- **Horizontal-reverse layout**: Progress bar at bottom, controls above
+- **Full width**: Spans 100% of screen width
+- **Custom control arrangement**:
+  - Left side: Current time, loop, rewind, play/pause, forward
+  - Flex spacer pushes controls to edges
+  - Right side: Volume, duration
+- **Zero gap**: Progress bar sits directly above spectrum visualizer
+- Uses `customControlsSection` and `customProgressBarSection` arrays
+
+**Minimal Layout** (`.custom-audio-player-minimal`):
+- Two-row flex layout
+- Progress bar on first row, controls centered on second row
+- More compact design for smaller contexts
+
+Both variants share common styles via grouped selectors:
+- Purple/pink gradient progress bars
+- Custom button hover states
+- Transparent backgrounds
+- Consistent spacing and sizing
 
 ## UI Component Library
 
@@ -404,4 +447,4 @@ Always prioritize consistency with existing code over introducing new patterns u
 ---
 
 **Last updated**: 2025-12-10
-**Codebase version**: Audio spectrum visualizer implementation
+**Codebase version**: Horizontal spectrum visualizer with responsive design and theme-reactive fluid particles
