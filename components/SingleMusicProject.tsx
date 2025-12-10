@@ -2,6 +2,7 @@ import { MusicProject } from "@/data/projects";
 import AudioPlayer from "react-h5-audio-player";
 import { useEffect, useRef, useState } from "react";
 import { AudioSpectrum } from "./ui/audio-spectrum";
+import "react-h5-audio-player/lib/styles.css";
 
 interface SingleMusicProjectProps {
   project: MusicProject;
@@ -28,43 +29,56 @@ export const SingleMusicProject = ({ project, onAudioElement }: SingleMusicProje
   }, [onAudioElement, project.audioUrl]);
 
     return (
-      <div className="fixed inset-0 flex flex-col items-center justify-end z-10 pointer-events-none">
+      <div className="fixed inset-0 flex flex-col items-start justify-end z-10 pointer-events-none">
         {/* Bottom section with title, tags, audio player, and spectrum */}
-        <div className="w-full pointer-events-auto pb-8">
-          {/* Title centered above everything */}
-          <div className="text-center mb-8">
-            <h2 className="text-3xl font-bold text-purple-100">{project.title}</h2>
+        <div className="w-full pointer-events-auto pb-8 px-8">
+          {/* Title left-aligned, larger */}
+          <div className="mb-6">
+            <h2 className="text-4xl font-bold text-purple-100">{project.title}</h2>
           </div>
 
-          {/* Tags */}
-          <div className="flex gap-2 flex-wrap mb-6 justify-center px-8">
+          {/* Tags - white with 0.75 opacity, left-aligned */}
+          <div className="flex gap-2 flex-wrap mb-8">
             {project.tags.map((tag, index) => (
               <span
                 key={index}
-                className="px-4 py-1.5 bg-purple-500/10 text-purple-300 rounded-full text-sm"
+                className="px-4 py-1.5 bg-white/10 text-white/75 rounded-full text-sm"
               >
                 {tag}
               </span>
             ))}
           </div>
 
-          {/* Audio Player */}
-          <div className="px-8 mb-0">
-            <div className="max-w-3xl mx-auto bg-black/30 backdrop-blur-md rounded-t-2xl p-6 pb-8">
-              <AudioPlayer
-                key={project.id}
-                ref={playerRef}
-                src={project.audioUrl}
-                className="custom-audio-player-minimal"
-                showJumpControls={true}
-                showSkipControls={false}
-                layout="stacked"
-                crossOrigin="anonymous"
-              />
-            </div>
+          {/* Audio Player - Full Width, Custom Layout */}
+          <div className="w-full mb-0">
+            <AudioPlayer
+              key={project.id}
+              ref={playerRef}
+              src={project.audioUrl}
+              className="custom-audio-player-fullwidth"
+              showJumpControls={true}
+              showSkipControls={false}
+              customAdditionalControls={[]}
+              customVolumeControls={[]}
+              customProgressBarSection={[
+                "PROGRESS_BAR",
+              ]}
+              customControlsSection={[
+                "CURRENT_TIME",
+                "LOOP",
+                "REWIND",
+                "MAIN_CONTROLS",
+                "FORWARD",
+                <div key="spacer" style={{ flex: 1 }} />,
+                "VOLUME",
+                "DURATION",
+              ]}
+              layout="horizontal-reverse"
+              crossOrigin="anonymous"
+            />
           </div>
 
-          {/* Audio Spectrum Visualizer - Full Width */}
+          {/* Audio Spectrum Visualizer - Full Width, No Gap */}
           <AudioSpectrum
             audioElement={audioElement}
             className="w-full"
