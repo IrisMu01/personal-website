@@ -1,0 +1,218 @@
+import { useEffect, useRef } from "react";
+
+interface AudioSpectrumProps {
+  className?: string;
+  audioElement?: HTMLAudioElement | null;
+  barCount?: number;
+  minFrequency?: number;
+  maxFrequency?: number;
+  smoothing?: number;
+  amplification?: number;
+  color?: string;
+  lineColor?: string;
+  barWidth?: number;
+  barGap?: number;
+}
+
+export function AudioSpectrum({
+  className = "",
+  audioElement = null,
+  barCount = 64,
+  minFrequency = 20,
+  maxFrequency = 20000,
+  smoothing = 0.75,
+  amplification = 1.5,
+  color = "rgba(168, 85, 247, 0.8)", // purple-500
+  lineColor = "rgba(192, 132, 252, 0.9)", // purple-400
+  barWidth = 8,
+  barGap = 4,
+}: AudioSpectrumProps) {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const analyserRef = useRef<AnalyserNode | null>(null);
+  const dataArrayRef = useRef<Uint8Array | null>(null);
+  const audioContextRef = useRef<AudioContext | null>(null);
+  const sourceNodeRef = useRef<MediaElementAudioSourceNode | null>(null);
+  const connectedElementRef = useRef<HTMLAudioElement | null>(null);
+  const animationRef = useRef<number>();
+
+  // Setup audio analysis when audioElement becomes available
+  useEffect(() => {
+    if (!audioElement) return;
+
+    // If this is the same element we already connected, skip
+    if (audioElement === connectedElementRef.current) return;
+
+    try {
+      // Create audio context if it doesn't exist
+      if (!audioContextRef.current) {
+        const audioContext = new (window.AudioContext ||
+          (window as any).webkitAudioContext)();
+        const analyser = audioContext.createAnalyser();
+        analyser.fftSize = 2048; // Higher resolution for better frequency analysis
+        analyser.smoothingTimeConstant = smoothing;
+
+        const bufferLength = analyser.frequencyBinCount;
+        const dataArray = new Uint8Array(bufferLength);
+
+        analyserRef.current = analyser;
+        dataArrayRef.current = dataArray;
+        audioContextRef.current = audioContext;
+      }
+
+      // Disconnect previous source if it exists
+      if (sourceNodeRef.current) {
+        try {
+          sourceNodeRef.current.disconnect();
+        } catch (e) {
+          // Ignore disconnect errors
+        }
+      }
+
+      // Create new source for this audio element
+      const source = audioContextRef.current!.createMediaElementSource(audioElement);
+      source.connect(analyserRef.current!);
+      analyserRef.current!.connect(audioContextRef.current!.destination);
+
+      sourceNodeRef.current = source;
+      connectedElementRef.current = audioElement;
+    } catch (error) {
+      console.error("Error setting up audio analysis:", error);
+    }
+
+    return () => {
+      // Don't close audio context on cleanup, only disconnect source
+      if (sourceNodeRef.current) {
+        try {
+          sourceNodeRef.current.disconnect();
+          sourceNodeRef.current = null;
+        } catch (e) {
+          // Ignore disconnect errors
+        }
+      }
+      connectedElementRef.current = null;
+    };
+  }, [audioElement, smoothing]);
+
+  // Map frequency bins to specified frequency range
+  const getFrequencyBands = (dataArray: Uint8Array, sampleRate: number = 44100): number[] => {
+    const fftSize = analyserRef.current?.fftSize || 2048;
+    const binWidth = sampleRate / fftSize;
+
+    // Calculate logarithmic frequency bands for better musical representation
+    const bands: number[] = [];
+    const logMin = Math.log10(minFrequency);
+    const logMax = Math.log10(maxFrequency);
+    const logStep = (logMax - logMin) / barCount;
+
+    for (let i = 0; i < barCount; i++) {
+      const freqStart = Math.pow(10, logMin + i * logStep);
+      const freqEnd = Math.pow(10, logMin + (i + 1) * logStep);
+
+      const startBin = Math.floor(freqStart / binWidth);
+      const endBin = Math.min(Math.floor(freqEnd / binWidth), dataArray.length - 1);
+
+      let sum = 0;
+      let count = 0;
+      for (let j = startBin; j <= endBin; j++) {
+        sum += dataArray[j];
+        count++;
+      }
+
+      bands.push(count > 0 ? (sum / count / 255) * amplification : 0);
+    }
+
+    return bands;
+  };
+
+  // Canvas setup and animation
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const ctx = canvas.getContext("2d", { alpha: true });
+    if (!ctx) return;
+
+    // Set canvas size
+    const resizeCanvas = () => {
+      canvas.width = window.innerWidth;
+      canvas.height = 300; // Fixed height for the spectrum
+    };
+    resizeCanvas();
+    window.addEventListener("resize", resizeCanvas);
+
+    // Animation loop
+    const animate = () => {
+      // Clear canvas
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Get frequency data
+      let frequencyData: number[] = Array(barCount).fill(0);
+      if (analyserRef.current && dataArrayRef.current) {
+        analyserRef.current.getByteFrequencyData(dataArrayRef.current);
+        frequencyData = getFrequencyBands(dataArrayRef.current);
+      }
+
+      // Calculate total width needed for bars
+      const totalBarWidth = barWidth + barGap;
+      const totalWidth = barCount * totalBarWidth - barGap;
+      const startX = (canvas.width - totalWidth) / 2;
+
+      // Store bottom points for connecting line
+      const bottomPoints: { x: number; y: number }[] = [];
+
+      // Draw bars
+      for (let i = 0; i < barCount; i++) {
+        const intensity = Math.min(frequencyData[i], 1);
+        const barHeight = intensity * (canvas.height - 40); // Leave some margin
+
+        const x = startX + i * totalBarWidth;
+        const y = 20; // Start from top with some padding
+        const bottomY = y + barHeight;
+
+        // Store bottom point
+        bottomPoints.push({ x: x + barWidth / 2, y: bottomY });
+
+        // Draw bar with gradient
+        const gradient = ctx.createLinearGradient(x, y, x, bottomY);
+        gradient.addColorStop(0, color);
+        gradient.addColorStop(1, color.replace(/[\d.]+\)$/, "0.4)")); // Fade at bottom
+
+        ctx.fillStyle = gradient;
+        ctx.fillRect(x, y, barWidth, barHeight);
+      }
+
+      // Draw connecting line between bottom points
+      if (bottomPoints.length > 1) {
+        ctx.beginPath();
+        ctx.moveTo(bottomPoints[0].x, bottomPoints[0].y);
+
+        for (let i = 1; i < bottomPoints.length; i++) {
+          ctx.lineTo(bottomPoints[i].x, bottomPoints[i].y);
+        }
+
+        ctx.strokeStyle = lineColor;
+        ctx.lineWidth = 2;
+        ctx.stroke();
+      }
+
+      animationRef.current = requestAnimationFrame(animate);
+    };
+
+    animate();
+
+    return () => {
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+      }
+      window.removeEventListener("resize", resizeCanvas);
+    };
+  }, [barCount, color, lineColor, barWidth, barGap, minFrequency, maxFrequency, amplification]);
+
+  return (
+    <canvas
+      ref={canvasRef}
+      className={className}
+      style={{ background: "transparent" }}
+    />
+  );
+}
