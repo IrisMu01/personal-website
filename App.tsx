@@ -47,10 +47,6 @@ export default function App() {
         targetElement.scrollIntoView({ behavior: "smooth", block: "start" });
         setCurrentProjectIndex(index);
 
-        // Pause audio when scrolling away from music projects
-        const newProject = unifiedProjects[index];
-        pauseOtherAudio(newProject.id);
-
         // Reset scrolling flag after animation
         setTimeout(() => {
           isScrollingRef.current = false;
@@ -105,6 +101,14 @@ export default function App() {
     window.addEventListener("wheel", handleWheel, { passive: true });
     return () => window.removeEventListener("wheel", handleWheel);
   }, [currentProjectIndex, unifiedProjects.length]);
+
+  // Pause audio for non-current projects whenever currentProjectIndex changes
+  useEffect(() => {
+    const currentProjectId = unifiedProjects[currentProjectIndex]?.id;
+    if (currentProjectId) {
+      pauseOtherAudio(currentProjectId);
+    }
+  }, [currentProjectIndex]);
 
   return (
     <div
