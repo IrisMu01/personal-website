@@ -98,15 +98,13 @@ export function AudioSpectrum({
     const fftSize = analyserRef.current?.fftSize || 2048;
     const binWidth = sampleRate / fftSize;
 
-    // Calculate logarithmic frequency bands for better musical representation
+    // Calculate linear frequency bands for uniform distribution
     const bands: number[] = [];
-    const logMin = Math.log10(minFrequency);
-    const logMax = Math.log10(maxFrequency);
-    const logStep = (logMax - logMin) / barCount;
+    const freqStep = (maxFrequency - minFrequency) / barCount;
 
     for (let i = 0; i < barCount; i++) {
-      const freqStart = Math.pow(10, logMin + i * logStep);
-      const freqEnd = Math.pow(10, logMin + (i + 1) * logStep);
+      const freqStart = minFrequency + i * freqStep;
+      const freqEnd = minFrequency + (i + 1) * freqStep;
 
       const startBin = Math.floor(freqStart / binWidth);
       const endBin = Math.min(Math.floor(freqEnd / binWidth), dataArray.length - 1);
