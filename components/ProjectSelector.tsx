@@ -87,7 +87,7 @@ export function ProjectSelector({
         </div>
 
         {/* Project Subtitles Carousel */}
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-4 project-subtitles">
           {/* Left Chevron */}
           <button
             onClick={handleScrollLeft}

@@ -661,3 +661,7 @@ html {
   width: 1.25rem !important;
   height: 1.25rem !important;
 }
+
+.project-subtitles {
+    margin-left: -35px;
+}
