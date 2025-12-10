@@ -60,8 +60,8 @@ export function ProjectSelector({
   };
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-30 pb-8">
-      <div className="flex flex-col items-center gap-6">
+    <div className="fixed bottom-0 left-0 right-0 z-30 pb-8 px-8">
+      <div className="flex flex-col items-start gap-6">
         {/* Tab Selector */}
         <div className="flex gap-8">
           <button

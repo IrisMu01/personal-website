@@ -14,17 +14,13 @@ export default function App() {
   ];
 
   const [currentProjectIndex, setCurrentProjectIndex] = useState(0);
-  const [isTransitioning, setIsTransitioning] = useState(false);
   const scrollAccumulatorRef = useRef(0);
-  const isTransitioningRef = useRef(false);
+  const isScrollingRef = useRef(false);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   // Get current project and derive active tab from it
   const currentProject = unifiedProjects[currentProjectIndex];
   const activeTab = currentProject.type;
-
-  // Separate current project into CS or Music type
-  const selectedCSProject = currentProject.type === "cs" ? currentProject : csProjects[0];
-  const selectedMusicProject = currentProject.type === "music" ? currentProject : musicProjects[0];
 
   // Prepare project list for selector (only show projects of current type)
   const currentProjects = activeTab === "cs"
@@ -33,13 +29,28 @@ export default function App() {
 
   const currentSelectedId = currentProject.id;
 
+  const scrollToProject = (index: number) => {
+    if (containerRef.current && index >= 0 && index < unifiedProjects.length) {
+      const targetElement = containerRef.current.children[index] as HTMLElement;
+      if (targetElement) {
+        isScrollingRef.current = true;
+        targetElement.scrollIntoView({ behavior: "smooth", block: "start" });
+        setCurrentProjectIndex(index);
+
+        // Reset scrolling flag after animation
+        setTimeout(() => {
+          isScrollingRef.current = false;
+          scrollAccumulatorRef.current = 0;
+        }, 700);
+      }
+    }
+  };
+
   const handleProjectSelect = (id: string) => {
     // Find the index in the unified list
     const newIndex = unifiedProjects.findIndex((p) => p.id === id);
     if (newIndex !== -1) {
-      setIsTransitioning(true);
-      setCurrentProjectIndex(newIndex);
-      setTimeout(() => setIsTransitioning(false), 500);
+      scrollToProject(newIndex);
     }
   };
 
@@ -47,16 +58,14 @@ export default function App() {
     // When tab is switched manually, go to the first project of that type
     const newIndex = unifiedProjects.findIndex((p) => p.type === tab);
     if (newIndex !== -1) {
-      setIsTransitioning(true);
-      setCurrentProjectIndex(newIndex);
-      setTimeout(() => setIsTransitioning(false), 500);
+      scrollToProject(newIndex);
     }
   };
 
-  // Scroll detection for unified project navigation
+  // Scroll detection for snap navigation
   useEffect(() => {
     const handleWheel = (e: WheelEvent) => {
-      if (isTransitioningRef.current) return;
+      if (isScrollingRef.current) return;
 
       scrollAccumulatorRef.current += e.deltaY;
 
@@ -72,18 +81,10 @@ export default function App() {
         }
 
         if (newIndex !== currentProjectIndex) {
-          isTransitioningRef.current = true;
-          setIsTransitioning(true);
-          setCurrentProjectIndex(newIndex);
-
-          // Reset after transition
-          setTimeout(() => {
-            isTransitioningRef.current = false;
-            setIsTransitioning(false);
-          }, 500);
+          scrollToProject(newIndex);
+        } else {
+          scrollAccumulatorRef.current = 0;
         }
-
-        scrollAccumulatorRef.current = 0;
       }
     };
 
@@ -93,7 +94,7 @@ export default function App() {
 
   return (
     <div
-      className={`min-h-screen w-full fixed inset-0 transition-colors duration-700 overflow-hidden ${
+      className={`min-h-screen w-full fixed inset-0 transition-colors duration-700 ${
         activeTab === "cs" ? "bg-black" : "bg-black"
       }`}
     >
@@ -112,7 +113,7 @@ export default function App() {
       {/* Credentials - Top Left */}
       <CredentialsSection activeTab={activeTab} />
 
-      {/* Project Selector - Top Center */}
+      {/* Project Selector - Bottom Left */}
       <ProjectSelector
         activeTab={activeTab}
         setActiveTab={setActiveTab}
@@ -121,17 +122,25 @@ export default function App() {
         onProjectSelect={handleProjectSelect}
       />
 
-      {/* Project Display with smooth transitions */}
+      {/* Scrollable container with all projects */}
       <div
-        className={`transition-opacity duration-500 ${
-          isTransitioning ? "opacity-0" : "opacity-100"
-        }`}
+        ref={containerRef}
+        className="absolute inset-0 overflow-y-auto overflow-x-hidden scroll-smooth"
+        style={{ scrollSnapType: "y mandatory" }}
       >
-        {activeTab === "cs" ? (
-          <SingleCSProject project={selectedCSProject} />
-        ) : (
-          <SingleMusicProject project={selectedMusicProject} />
-        )}
+        {unifiedProjects.map((project, index) => (
+          <div
+            key={project.id}
+            className="min-h-screen w-full relative"
+            style={{ scrollSnapAlign: "start" }}
+          >
+            {project.type === "cs" ? (
+              <SingleCSProject project={project} />
+            ) : (
+              <SingleMusicProject project={project} />
+            )}
+          </div>
+        ))}
       </div>
     </div>
   );
