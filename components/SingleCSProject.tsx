@@ -6,12 +6,13 @@ interface SingleCSProjectProps {
 
 export function SingleCSProject({ project }: SingleCSProjectProps) {
   return (
-    <div className="h-full w-full flex flex-col justify-between pointer-events-none">
+    <div className="h-full w-full flex flex-col pointer-events-none">
       {/* Spacer for top credentials section */}
-      <div className="h-32" />
+      <div className="h-32 flex-shrink-0" />
 
-      {/* Bottom section with title, tags, description, and video */}
-      <div className="w-full pointer-events-auto pb-32">
+      {/* Centered content area */}
+      <div className="flex-1 flex items-center justify-center">
+        <div className="w-full pointer-events-auto pb-32">
         {/* Title - left-aligned, larger, consistent with music projects */}
         <div className="mb-6 px-8">
           <h2 className="text-4xl font-bold text-cyan-100">{project.title}</h2>
@@ -54,6 +55,7 @@ export function SingleCSProject({ project }: SingleCSProjectProps) {
             </video>
           </div>
         )}
+        </div>
       </div>
     </div>
   );

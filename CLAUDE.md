@@ -5,11 +5,13 @@ This document provides comprehensive guidance for AI assistants working on this 
 ## Project Overview
 
 This is a personal portfolio website for Iris Mu, showcasing both Computer Science and Music Production projects. The site features:
-- **Dual-theme interface**: CS and Music themes with dynamic color transitions
-- **Project selector**: Tab-based navigation to switch between CS and Music modes, with individual project selection
+- **Unified vertical scrolling**: All CS and Music projects on one continuous scrollable page
+- **Snap-to-section navigation**: Scroll-based navigation with smooth transitions and 100px threshold
+- **Dual-theme interface**: CS and Music themes with dynamic color transitions based on current project
+- **Project selector**: Bottom-aligned navigation for quick project access and tab switching
 - **Visual effects**: Fluid particle simulation with theme-reactive colors (blue/cyan for CS, purple/magenta for Music)
 - **Audio spectrum visualizer**: Real-time horizontal frequency spectrum with responsive bar widths
-- **Audio playback**: Custom full-width audio player with horizontal layout
+- **Audio playback**: Custom full-width audio player with auto-pause when scrolling away
 - **Responsive design**: All components adapt to screen size
 
 ## Tech Stack
@@ -232,20 +234,66 @@ const [activeTab, setActiveTab] = useState<"cs" | "music">("cs");
 - **CS theme**: Blue/cyan particles (hue 180-240, lightness 60%)
 - **Music theme**: Purple/magenta particles (hue 270-330, lightness 75%)
 
-### 2. Project Navigation
-The app uses a selector-based navigation system:
-- **Tab switching**: CS vs Music mode via `ProjectSelector`
-- **Project selection**: Dropdown to choose individual projects within each category
-- **State management**: Separate state for CS and Music project selections
-- Projects are stored in `data/projects.ts` with metadata (title, description, tags, etc.)
+### 2. Unified Project Navigation
+The app uses a vertical scrolling layout with all projects on one continuous page:
+
+**Unified Project List:**
+- All CS and Music projects combined into single array: `[CS1, CS2, Music1, Music2, ...]`
+- Projects laid out vertically, each taking full viewport height
+- Current project determines active tab and particle theme colors
+
+**Scroll-Based Navigation:**
+- Accumulates scroll delta (wheel events)
+- When delta exceeds 100px, auto-scrolls to next/previous project
+- Uses `scrollIntoView({ behavior: "smooth" })` for seamless transitions
+- 700ms cooldown prevents rapid-fire scrolling during transitions
+
+**Click Navigation:**
+- Bottom-aligned `ProjectSelector` (left-aligned text, px-8 padding)
+- Click project titles to jump directly to any project
+- Click CS/Music tabs to jump to first project of that type
+- Shows only projects of current active type in selector
+
+**Audio Management:**
+- Each music project registers its audio element via callback
+- Audio elements tracked in Map by project ID
+- Auto-pause audio when scrolling away from music projects
+- Ensures only one audio plays at a time
 
 ```typescript
-const [activeTab, setActiveTab] = useState<"cs" | "music">("cs");
-const [selectedCSProjectId, setSelectedCSProjectId] = useState(csProjects[0].id);
-const [selectedMusicProjectId, setSelectedMusicProjectId] = useState(musicProjects[0].id);
+const unifiedProjects = [
+  ...csProjects.map((p) => ({ ...p, type: "cs" as const })),
+  ...musicProjects.map((p) => ({ ...p, type: "music" as const })),
+];
+
+const [currentProjectIndex, setCurrentProjectIndex] = useState(0);
+const audioElementsRef = useRef<Map<string, HTMLAudioElement>>(new Map());
 ```
 
-### 3. Audio Spectrum Visualizer
+### 3. Project Component Layout
+Both `SingleCSProject` and `SingleMusicProject` use a vertical-centered layout:
+
+**Structure:**
+- Top spacer div (`h-32 flex-shrink-0`) to avoid overlap with credentials section
+- Flex-1 centered container wraps all content
+- Content is vertically centered within available space
+- All text uses left alignment with `px-8` padding
+
+```typescript
+<div className="h-full w-full flex flex-col pointer-events-none">
+  {/* Spacer for top credentials section */}
+  <div className="h-32 flex-shrink-0" />
+
+  {/* Centered content area */}
+  <div className="flex-1 flex items-center justify-center">
+    <div className="w-full pointer-events-auto pb-32">
+      {/* Project content: title, tags, description, media */}
+    </div>
+  </div>
+</div>
+```
+
+### 4. Audio Spectrum Visualizer
 Implemented in `components/ui/audio-spectrum.tsx`:
 - **Real-time frequency analysis**: Uses Web Audio API with AnalyserNode (FFT size: 2048)
 - **Responsive layout**: Bars span full page width, automatically adapting to screen size
@@ -278,7 +326,7 @@ Implemented in `components/ui/audio-spectrum.tsx`:
 />
 ```
 
-### 4. Interactive Effects
+### 5. Interactive Effects
 
 #### Fluid Particle Background
 - `FluidParticles` component: Navier-Stokes fluid simulation
@@ -300,7 +348,7 @@ Implemented in `components/ui/audio-spectrum.tsx`:
 />
 ```
 
-### 5. Custom Audio Player
+### 6. Custom Audio Player
 Heavily customized `react-h5-audio-player` with two CSS variants in `globals.css`:
 
 **Full-Width Layout** (`.custom-audio-player-fullwidth`):
@@ -447,4 +495,4 @@ Always prioritize consistency with existing code over introducing new patterns u
 ---
 
 **Last updated**: 2025-12-10
-**Codebase version**: Horizontal spectrum visualizer with responsive design and theme-reactive fluid particles
+**Codebase version**: Unified vertical scrolling layout with snap-to-section navigation, centered project components, and auto-pause audio
