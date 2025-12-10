@@ -76,14 +76,14 @@ export default function App() {
     }
   };
 
-  // Scroll detection for snap navigation
+  // Scroll detection for snap navigation (200px threshold for 50vh bottom spacer)
   useEffect(() => {
     const handleWheel = (e: WheelEvent) => {
       if (isScrollingRef.current) return;
 
       scrollAccumulatorRef.current += e.deltaY;
 
-      if (Math.abs(scrollAccumulatorRef.current) > 100) {
+      if (Math.abs(scrollAccumulatorRef.current) > 200) {
         let newIndex = currentProjectIndex;
 
         if (scrollAccumulatorRef.current > 0 && currentProjectIndex < unifiedProjects.length - 1) {
@@ -145,7 +145,7 @@ export default function App() {
         {unifiedProjects.map((project, index) => (
           <div
             key={project.id}
-            className="min-h-screen w-full relative"
+            className="w-full relative"
             style={{ scrollSnapAlign: "start" }}
           >
             {project.type === "cs" ? (

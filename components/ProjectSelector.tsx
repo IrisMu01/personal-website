@@ -60,13 +60,13 @@ export function ProjectSelector({
   };
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-30 pb-8 px-8">
-      <div className="flex flex-col items-start gap-6">
+    <div className="fixed bottom-0 left-0 right-0 z-30 pb-4 px-8">
+      <div className="flex flex-col items-start gap-3">
         {/* Tab Selector */}
         <div className="flex gap-8">
           <button
             onClick={() => setActiveTab("cs")}
-            className={`text-2xl font-light transition-all duration-300 ${
+            className={`text-lg font-light transition-all duration-300 ${
               activeTab === "cs"
                 ? "text-white scale-110"
                 : "text-white/40 hover:text-white/60"
@@ -76,7 +76,7 @@ export function ProjectSelector({
           </button>
           <button
             onClick={() => setActiveTab("music")}
-            className={`text-2xl font-light transition-all duration-300 ${
+            className={`text-lg font-light transition-all duration-300 ${
               activeTab === "music"
                 ? "text-white scale-110"
                 : "text-white/40 hover:text-white/60"
@@ -107,8 +107,8 @@ export function ProjectSelector({
                 onClick={() => onProjectSelect(project.id)}
                 className={`transition-all duration-300 ${
                   selectedProjectId === project.id
-                    ? "text-white text-base scale-105"
-                    : "text-white/50 text-sm hover:text-white/70"
+                    ? "text-white text-sm scale-105"
+                    : "text-white/50 text-xs hover:text-white/70"
                 }`}
               >
                 {project.title}
