@@ -71,6 +71,23 @@ export function AudioSpectrum({
 
       sourceNodeRef.current = source;
       connectedElementRef.current = audioElement;
+
+      // Resume AudioContext when audio starts playing
+      // This is required because browsers start AudioContext in suspended state
+      const handlePlay = () => {
+        if (audioContextRef.current?.state === "suspended") {
+          audioContextRef.current.resume();
+        }
+      };
+
+      audioElement.addEventListener("play", handlePlay);
+
+      // Cleanup function
+      const cleanup = () => {
+        audioElement.removeEventListener("play", handlePlay);
+      };
+
+      return cleanup;
     } catch (error) {
       console.error("Error setting up audio analysis:", error);
     }
