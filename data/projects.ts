@@ -28,11 +28,11 @@ export const csProjects: CSProject[] = [
   },
   {
     id: "cs2",
-    title: "Mini Map RPG",
-    tags: ["React", "Node.js", "Docker", "RabbitMQ", "Redis"],
+    title: "Personal Website",
+    tags: ["Claude Code", "WebGL",  "React"],
     description: [
-      "Architected and implemented a mini-map, turn-based RPG game with a React front-end and 4 Node.js microservices each handling authentication, user registration, creating/loading game saves, and logging.",
-      "Packaged services with Docker and added health checks; dev stack used hosted DB/Redis and local RabbitMQ.",
+      "Developed an interactive static website featuring custom WebGL implementations including a Navier-Stokes fluid particle simulation and real-time spectrum audio visualizers.",
+      "Leveraged Figma Make for initial design prototyping, then utilized Claude Code for rapid iteration and refinement across multiple design variations.",
     ],
   },
 ];

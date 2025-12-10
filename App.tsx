@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { CredentialsSection } from "./components/CredentialsSection";
 import { ProjectSelector } from "./components/ProjectSelector";
 import { SingleCSProject } from "./components/SingleCSProject";
@@ -7,32 +7,112 @@ import { FluidParticles } from "./components/ui/fluid-particles";
 import { csProjects, musicProjects } from "./data/projects";
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState<"cs" | "music">("cs");
-  const [selectedCSProjectId, setSelectedCSProjectId] = useState(csProjects[0].id);
-  const [selectedMusicProjectId, setSelectedMusicProjectId] = useState(musicProjects[0].id);
+  // Unified project list combining CS and Music projects
+  const unifiedProjects = [
+    ...csProjects.map((p) => ({ ...p, type: "cs" as const })),
+    ...musicProjects.map((p) => ({ ...p, type: "music" as const })),
+  ];
 
-  // Get currently selected projects
-  const selectedCSProject = csProjects.find((p) => p.id === selectedCSProjectId) || csProjects[0];
-  const selectedMusicProject = musicProjects.find((p) => p.id === selectedMusicProjectId) || musicProjects[0];
+  const [currentProjectIndex, setCurrentProjectIndex] = useState(0);
+  const scrollAccumulatorRef = useRef(0);
+  const isScrollingRef = useRef(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const audioElementsRef = useRef<Map<string, HTMLAudioElement>>(new Map());
 
-  // Prepare project list for selector
+  // Get current project and derive active tab from it
+  const currentProject = unifiedProjects[currentProjectIndex];
+  const activeTab = currentProject.type;
+
+  // Function to pause all audio except the current one
+  const pauseOtherAudio = (currentProjectId: string) => {
+    audioElementsRef.current.forEach((audio, projectId) => {
+      if (projectId !== currentProjectId && !audio.paused) {
+        audio.pause();
+      }
+    });
+  };
+
+  // Prepare project list for selector (only show projects of current type)
   const currentProjects = activeTab === "cs"
     ? csProjects.map((p) => ({ id: p.id, title: p.title, tags: p.tags }))
     : musicProjects.map((p) => ({ id: p.id, title: p.title, tags: p.tags }));
 
-  const currentSelectedId = activeTab === "cs" ? selectedCSProjectId : selectedMusicProjectId;
+  const currentSelectedId = currentProject.id;
 
-  const handleProjectSelect = (id: string) => {
-    if (activeTab === "cs") {
-      setSelectedCSProjectId(id);
-    } else {
-      setSelectedMusicProjectId(id);
+  const scrollToProject = (index: number) => {
+    if (containerRef.current && index >= 0 && index < unifiedProjects.length) {
+      const targetElement = containerRef.current.children[index] as HTMLElement;
+      if (targetElement) {
+        isScrollingRef.current = true;
+        targetElement.scrollIntoView({ behavior: "smooth", block: "start" });
+        setCurrentProjectIndex(index);
+
+        // Reset scrolling flag after animation
+        setTimeout(() => {
+          isScrollingRef.current = false;
+          scrollAccumulatorRef.current = 0;
+        }, 700);
+      }
     }
   };
 
+  const handleProjectSelect = (id: string) => {
+    // Find the index in the unified list
+    const newIndex = unifiedProjects.findIndex((p) => p.id === id);
+    if (newIndex !== -1) {
+      scrollToProject(newIndex);
+    }
+  };
+
+  const setActiveTab = (tab: "cs" | "music") => {
+    // When tab is switched manually, go to the first project of that type
+    const newIndex = unifiedProjects.findIndex((p) => p.type === tab);
+    if (newIndex !== -1) {
+      scrollToProject(newIndex);
+    }
+  };
+
+  // Scroll detection for snap navigation (200px threshold for 50vh bottom spacer)
+  useEffect(() => {
+    const handleWheel = (e: WheelEvent) => {
+      if (isScrollingRef.current) return;
+
+      scrollAccumulatorRef.current += e.deltaY;
+
+      if (Math.abs(scrollAccumulatorRef.current) > 200) {
+        let newIndex = currentProjectIndex;
+
+        if (scrollAccumulatorRef.current > 0 && currentProjectIndex < unifiedProjects.length - 1) {
+          // Scroll down - next project
+          newIndex = currentProjectIndex + 1;
+        } else if (scrollAccumulatorRef.current < 0 && currentProjectIndex > 0) {
+          // Scroll up - previous project
+          newIndex = currentProjectIndex - 1;
+        }
+
+        if (newIndex !== currentProjectIndex) {
+          scrollToProject(newIndex);
+        } else {
+          scrollAccumulatorRef.current = 0;
+        }
+      }
+    };
+
+    window.addEventListener("wheel", handleWheel, { passive: true });
+    return () => window.removeEventListener("wheel", handleWheel);
+  }, [currentProjectIndex, unifiedProjects.length]);
+
+  // Pause audio for non-current projects whenever currentProjectIndex changes
+  useEffect(() => {
+    const currentProjectId = unifiedProjects[currentProjectIndex]?.id;
+    if (currentProjectId) {
+      pauseOtherAudio(currentProjectId);
+    }
+  }, [currentProjectIndex]);
+
   return (
     <div
-      className={`min-h-screen w-full fixed inset-0 transition-colors duration-700 overflow-hidden ${
+      className={`min-h-screen w-full fixed inset-0 transition-colors duration-700 ${
         activeTab === "cs" ? "bg-black" : "bg-black"
       }`}
     >
@@ -46,12 +126,12 @@ export default function App() {
 
       {/* Gradient overlays for text protection */}
       <div className="absolute top-0 left-0 right-0 h-48 bg-gradient-to-b from-black to-transparent pointer-events-none z-10" />
-      <div className="absolute bottom-0 left-0 right-0 h-96 bg-gradient-to-t from-black via-black/80 to-transparent pointer-events-none z-10" />
+      <div className="absolute bottom-0 left-0 right-0 h-48 bg-gradient-to-t from-black to-transparent pointer-events-none z-10" />
 
       {/* Credentials - Top Left */}
       <CredentialsSection activeTab={activeTab} />
 
-      {/* Project Selector - Top Center */}
+      {/* Project Selector - Bottom Left */}
       <ProjectSelector
         activeTab={activeTab}
         setActiveTab={setActiveTab}
@@ -60,12 +140,33 @@ export default function App() {
         onProjectSelect={handleProjectSelect}
       />
 
-      {/* Project Display */}
-      {activeTab === "cs" ? (
-        <SingleCSProject project={selectedCSProject} />
-      ) : (
-        <SingleMusicProject project={selectedMusicProject} />
-      )}
+      {/* Scrollable container with all projects */}
+      <div
+        ref={containerRef}
+        className="absolute inset-0 overflow-y-auto overflow-x-hidden scroll-smooth"
+      >
+        {unifiedProjects.map((project, index) => (
+          <div
+            key={project.id}
+            className="w-full relative"
+          >
+            {project.type === "cs" ? (
+              <SingleCSProject project={project} />
+            ) : (
+              <SingleMusicProject
+                project={project}
+                onAudioElement={(element) => {
+                  if (element) {
+                    audioElementsRef.current.set(project.id, element);
+                  } else {
+                    audioElementsRef.current.delete(project.id);
+                  }
+                }}
+              />
+            )}
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
