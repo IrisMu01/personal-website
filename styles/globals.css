@@ -508,7 +508,7 @@ html {
   height: 4px !important;
   border-radius: 2px !important;
   width: 100% !important;
-  margin: 0px 0px -12px -5px !important;
+  margin: 0px 0px -12px 0 !important;
 }
 
 .custom-audio-player-minimal .rhap_volume-indicator,
@@ -625,10 +625,15 @@ html {
   margin: 0px 5px -15px 5px !important;
 }
 
-.custom-audio-player-fullwidth .rhap_current-time,
+.custom-audio-player-fullwidth .rhap_current-time {
+  font-size: 1rem !important;
+  margin-bottom: -15px;
+}
+
 .custom-audio-player-fullwidth .rhap_total-time {
   font-size: 1rem !important;
   margin-bottom: -15px;
+  margin-left: 5px;
 }
 
 .custom-audio-player-fullwidth .rhap_main-controls {
