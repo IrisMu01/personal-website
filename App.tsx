@@ -36,8 +36,12 @@ export default function App() {
         activeTab === "cs" ? "bg-black" : "bg-black"
       }`}
     >
-      {/* Particle Background */}
-      <FluidParticles className="absolute inset-0 pointer-events-none z-0" />
+      {/* Particle Background - Changes color based on active tab */}
+      <FluidParticles
+        className="absolute inset-0 pointer-events-none z-0"
+        hueMin={activeTab === "cs" ? 180 : 280}
+        hueMax={activeTab === "cs" ? 240 : 320}
+      />
 
       {/* Gradient overlays for text protection */}
       <div className="absolute top-0 left-0 right-0 h-48 bg-gradient-to-b from-black to-transparent pointer-events-none z-10" />
