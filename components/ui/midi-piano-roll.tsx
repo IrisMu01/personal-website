@@ -13,7 +13,7 @@ interface MidiPianoRollProps {
   cornerRadius?: number;      // default: 2px
   noteMargin?: number;        // default: 1px
   maxNoteHeight?: number;     // default: 6px
-  anticipatoryGlow?: number;  // default: 0.1s
+  anticipatoryGlow?: number;  // default: 0.3s (fade-in/fade-out duration)
 }
 
 export function MidiPianoRoll({
@@ -132,14 +132,43 @@ export function MidiPianoRoll({
         const noteWidth = note.duration * pixelsPerSecond;
         const noteY = (midiData.maxPitch - note.midi) * noteHeight;
 
-        // Determine if note is active (with anticipatory glow)
-        const isActive =
-          currentTime >= note.time - anticipatoryGlow &&
-          currentTime <= noteEndTime;
+        // Calculate fade factor (0 = grey, 1 = full color)
+        let fadeFactor = 0;
 
-        // Color: grey when inactive, track color when active
-        const color = isActive ? note.color : "#808080";
-        const colorInt = parseInt(color.replace("#", ""), 16);
+        if (currentTime < note.time - anticipatoryGlow) {
+          // Before fade-in starts
+          fadeFactor = 0;
+        } else if (currentTime < note.time) {
+          // Fade in: gradually increase from 0 to 1
+          fadeFactor = (currentTime - (note.time - anticipatoryGlow)) / anticipatoryGlow;
+        } else if (currentTime <= noteEndTime - anticipatoryGlow) {
+          // Fully lit
+          fadeFactor = 1;
+        } else if (currentTime <= noteEndTime) {
+          // Fade out: gradually decrease from 1 to 0
+          fadeFactor = (noteEndTime - currentTime) / anticipatoryGlow;
+        } else {
+          // After fade-out ends
+          fadeFactor = 0;
+        }
+
+        // Interpolate between grey (#808080) and track color
+        const greyColor = 0x808080;
+        const targetColor = parseInt(note.color.replace("#", ""), 16);
+
+        const greyR = (greyColor >> 16) & 0xff;
+        const greyG = (greyColor >> 8) & 0xff;
+        const greyB = greyColor & 0xff;
+
+        const targetR = (targetColor >> 16) & 0xff;
+        const targetG = (targetColor >> 8) & 0xff;
+        const targetB = targetColor & 0xff;
+
+        const r = Math.round(greyR + (targetR - greyR) * fadeFactor);
+        const g = Math.round(greyG + (targetG - greyG) * fadeFactor);
+        const b = Math.round(greyB + (targetB - greyB) * fadeFactor);
+
+        const colorInt = (r << 16) | (g << 8) | b;
 
         // Draw rounded rectangle
         graphics.clear();

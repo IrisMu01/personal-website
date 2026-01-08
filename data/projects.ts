@@ -27,7 +27,7 @@ export interface MusicProject {
   noteCornerRadius?: number;      // default: 2 (px)
   noteMargin?: number;            // default: 1 (px)
   noteMaxHeight?: number;         // default: 6 (px, including margin)
-  anticipatoryGlow?: number;      // default: 0.05 (seconds before note.time)
+  anticipatoryGlow?: number;      // default: 0.3 (fade-in/fade-out duration in seconds)
 }
 
 export const csProjects: CSProject[] = [
