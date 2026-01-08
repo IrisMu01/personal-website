@@ -47,7 +47,7 @@ export const SingleMusicProject = ({ project, onAudioElement }: SingleMusicProje
         {/* Black overlay - fades in/out with music */}
         <div
           className="fixed inset-0 bg-black pointer-events-none transition-opacity duration-700 -z-10"
-          style={{ opacity: isPlaying ? (project.overlayOpacity ?? 0.7) : 0 }}
+          style={{ opacity: isPlaying ? (project.overlayOpacity ?? 0.6) : 0 }}
         />
 
         {/* Content section - h-screen */}

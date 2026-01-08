@@ -23,7 +23,7 @@ export interface MusicProject {
   midiTracks?: MidiTrack[];
 
   // Visual customization (optional, per-project overrides)
-  overlayOpacity?: number;        // default: 0.7
+  overlayOpacity?: number;        // default: 0.6
   noteCornerRadius?: number;      // default: 2 (px)
   noteMargin?: number;            // default: 1 (px)
   noteMaxHeight?: number;         // default: 6 (px, including margin)
@@ -64,8 +64,8 @@ export const musicProjects: MusicProject[] = [
         { url: "https://pub-18848117928e4ff497abec0a1725d007.r2.dev/midis/piece_1_brasses.mid", color: "#A0B5FF", label: "Brasses" },
         { url: "https://pub-18848117928e4ff497abec0a1725d007.r2.dev/midis/piece_1_others.mid", color: "#C0A5FF", label: "Others" },
         { url: "https://pub-18848117928e4ff497abec0a1725d007.r2.dev/midis/piece_1_strings.mid", color: "#B0C5FF", label: "Strings" },
-        { url: "https://pub-18848117928e4ff497abec0a1725d007.r2.dev/midis/piece_1_synth_basses.mid", color: "#B0C5FF", label: "Synth Basses" },
-        { url: "https://pub-18848117928e4ff497abec0a1725d007.r2.dev/midis/piece_1_woodwinds.mid", color: "#B0C5FF", label: "Woodwinds" },
+        { url: "https://pub-18848117928e4ff497abec0a1725d007.r2.dev/midis/piece_1_synth_basses.mid", color: "#C0A5FF", label: "Synth Basses" },
+        { url: "https://pub-18848117928e4ff497abec0a1725d007.r2.dev/midis/piece_1_woodwinds.mid", color: "#A0B5FF", label: "Woodwinds" },
     ]
   },
   {

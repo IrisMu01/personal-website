@@ -13,7 +13,7 @@ interface MidiPianoRollProps {
   cornerRadius?: number;      // default: 2px
   noteMargin?: number;        // default: 1px
   maxNoteHeight?: number;     // default: 6px
-  anticipatoryGlow?: number;  // default: 0.05s
+  anticipatoryGlow?: number;  // default: 0.1s
 }
 
 export function MidiPianoRoll({
@@ -24,7 +24,7 @@ export function MidiPianoRoll({
   cornerRadius = 2,
   noteMargin = 1,
   maxNoteHeight = 6,
-  anticipatoryGlow = 0.05,
+  anticipatoryGlow = 0.3,
 }: MidiPianoRollProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const appRef = useRef<PIXI.Application | null>(null);
