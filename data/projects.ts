@@ -26,7 +26,7 @@ export interface MusicProject {
   overlayOpacity?: number;        // default: 0.6
   noteCornerRadius?: number;      // default: 2 (px)
   noteMargin?: number;            // default: 1 (px)
-  noteMaxHeight?: number;         // default: 6 (px, including margin)
+  noteMaxHeight?: number;         // default: 4 (px, including margin)
   anticipatoryGlow?: number;      // default: 0.1 (fade-in/fade-out duration in seconds)
 }
 

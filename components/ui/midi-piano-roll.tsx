@@ -12,7 +12,7 @@ interface MidiPianoRollProps {
   // Styling (with defaults)
   cornerRadius?: number;      // default: 2px
   noteMargin?: number;        // default: 1px
-  maxNoteHeight?: number;     // default: 6px
+  maxNoteHeight?: number;     // default: 4px
   anticipatoryGlow?: number;  // default: 0.1s (fade-in/fade-out duration)
 }
 
@@ -23,7 +23,7 @@ export function MidiPianoRoll({
   opacity,
   cornerRadius = 2,
   noteMargin = 1,
-  maxNoteHeight = 6,
+  maxNoteHeight = 4,
   anticipatoryGlow = 0.1,
 }: MidiPianoRollProps) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -106,13 +106,14 @@ export function MidiPianoRoll({
       );
       const rectHeight = noteHeight - noteMargin;
 
-      // Calculate viewport: show ~12-15 seconds centered on currentTime
-      const viewportDuration = window.innerWidth < 768 ? 8 : 12;
-      const viewportStart = currentTime - viewportDuration / 2;
-      const viewportEnd = currentTime + viewportDuration / 2;
-
-      // Pixels per second
+      // Calculate viewport: align current notes to left with 150px for past notes
+      const pastNotesPx = 150; // pixels reserved for past notes
+      const viewportDuration = window.innerWidth < 768 ? 10 : 15;
       const pixelsPerSecond = canvas.width / viewportDuration;
+      const pastDuration = pastNotesPx / pixelsPerSecond;
+
+      const viewportStart = currentTime - pastDuration;
+      const viewportEnd = viewportStart + viewportDuration;
 
       // Render each note
       midiData.notes.forEach((note) => {
@@ -129,7 +130,7 @@ export function MidiPianoRoll({
 
         // Calculate note position
         const noteX = (note.time - viewportStart) * pixelsPerSecond;
-        const noteWidth = note.duration * pixelsPerSecond;
+        const noteWidth = note.duration * pixelsPerSecond * 0.3; // Shrink by 70%
         const noteY = (midiData.maxPitch - note.midi) * noteHeight;
 
         // Calculate fade factor (0 = grey, 1 = full color)
