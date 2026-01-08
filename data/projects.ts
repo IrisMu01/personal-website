@@ -66,7 +66,8 @@ export const musicProjects: MusicProject[] = [
         { url: "https://pub-18848117928e4ff497abec0a1725d007.r2.dev/midis/piece_1_strings.mid", color: "#B0C5FF", label: "Strings" },
         { url: "https://pub-18848117928e4ff497abec0a1725d007.r2.dev/midis/piece_1_synth_basses.mid", color: "#C0A5FF", label: "Synth Basses" },
         { url: "https://pub-18848117928e4ff497abec0a1725d007.r2.dev/midis/piece_1_woodwinds.mid", color: "#A0B5FF", label: "Woodwinds" },
-    ]
+    ],
+    anticipatoryGlow: 0.5,  // Test with 500ms - much more visible
   },
   {
     id: "music2",
