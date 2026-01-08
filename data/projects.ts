@@ -60,6 +60,13 @@ export const musicProjects: MusicProject[] = [
     tags: ["Hybrid Orchestral", "Cinematic"],
     imageUrl: "https://images.unsplash.com/photo-1507838153414-b4b713384a76?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400",
     audioUrl: "https://pub-18848117928e4ff497abec0a1725d007.r2.dev/piece_1.wav",
+    midiTracks: [
+        { url: "https://pub-18848117928e4ff497abec0a1725d007.r2.dev/midis/piece_1_brasses.mid", color: "#A0B5FF", label: "Brasses" },
+        { url: "https://pub-18848117928e4ff497abec0a1725d007.r2.dev/midis/piece_1_others.mid", color: "#C0A5FF", label: "Others" },
+        { url: "https://pub-18848117928e4ff497abec0a1725d007.r2.dev/midis/piece_1_strings.mid", color: "#B0C5FF", label: "Strings" },
+        { url: "https://pub-18848117928e4ff497abec0a1725d007.r2.dev/midis/piece_1_synth_basses.mid", color: "#B0C5FF", label: "Synth Basses" },
+        { url: "https://pub-18848117928e4ff497abec0a1725d007.r2.dev/midis/piece_1_woodwinds.mid", color: "#B0C5FF", label: "Woodwinds" },
+    ]
   },
   {
     id: "music2",
