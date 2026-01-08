@@ -62,7 +62,7 @@ export const SingleMusicProject = ({ project, onAudioElement }: SingleMusicProje
               {project.midiTracks && (
                 <MidiPianoRoll
                   midiTracks={project.midiTracks}
-                  currentTime={audioElement?.currentTime ?? 0}
+                  audioElement={audioElement}
                   isPlaying={isPlaying}
                   opacity={isPlaying ? 1 : 0}
                   cornerRadius={project.noteCornerRadius}

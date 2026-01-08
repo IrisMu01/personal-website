@@ -5,7 +5,7 @@ import { MidiTrack } from "@/data/projects";
 
 interface MidiPianoRollProps {
   midiTracks?: MidiTrack[];
-  currentTime: number;
+  audioElement: HTMLAudioElement | null;
   isPlaying: boolean;
   opacity: number;
 
@@ -18,7 +18,7 @@ interface MidiPianoRollProps {
 
 export function MidiPianoRoll({
   midiTracks,
-  currentTime,
+  audioElement,
   isPlaying,
   opacity,
   cornerRadius = 2,
@@ -89,12 +89,15 @@ export function MidiPianoRoll({
 
   // Animation loop: update note positions and colors
   useEffect(() => {
-    if (!appRef.current || !midiData || !isPlaying) return;
+    if (!appRef.current || !midiData || !isPlaying || !audioElement) return;
 
     const app = appRef.current;
     let animationFrameId: number;
 
     const animate = () => {
+      // Read live currentTime from audio element on each frame
+      const currentTime = audioElement.currentTime;
+
       const canvas = app.canvas;
       const pitchRange = midiData.maxPitch - midiData.minPitch + 1;
       const noteHeight = Math.min(
@@ -163,7 +166,7 @@ export function MidiPianoRoll({
     };
   }, [
     midiData,
-    currentTime,
+    audioElement,
     isPlaying,
     cornerRadius,
     noteMargin,
