@@ -6,12 +6,28 @@ export interface CSProject {
   videoUrl?: string;
 }
 
+export interface MidiTrack {
+  url: string;           // R2 URL to .mid file
+  color: string;         // hex color (e.g., "#A0B0FF", "#D0C0FF")
+  label?: string;        // optional: "Strings", "Brass", etc.
+}
+
 export interface MusicProject {
   id: string;
   title: string;
   tags: string[];
   imageUrl: string;
   audioUrl: string;
+
+  // MIDI visualization (optional)
+  midiTracks?: MidiTrack[];
+
+  // Visual customization (optional, per-project overrides)
+  overlayOpacity?: number;        // default: 0.7
+  noteCornerRadius?: number;      // default: 2 (px)
+  noteMargin?: number;            // default: 1 (px)
+  noteMaxHeight?: number;         // default: 6 (px, including margin)
+  anticipatoryGlow?: number;      // default: 0.05 (seconds before note.time)
 }
 
 export const csProjects: CSProject[] = [
