@@ -108,7 +108,7 @@ export function MidiPianoRoll({
 
       // Calculate viewport: align current notes to left with 150px for past notes
       const pastNotesPx = 150; // pixels reserved for past notes
-      const viewportDuration = window.innerWidth < 768 ? 10 : 15;
+      const viewportDuration = window.innerWidth < 768 ? 33 : 50; // Show more time = compress notes
       const pixelsPerSecond = canvas.width / viewportDuration;
       const pastDuration = pastNotesPx / pixelsPerSecond;
 
@@ -128,9 +128,9 @@ export function MidiPianoRoll({
         }
         graphics.visible = true;
 
-        // Calculate note position
+        // Calculate note position (timeline is compressed, notes are proportionally narrower)
         const noteX = (note.time - viewportStart) * pixelsPerSecond;
-        const noteWidth = note.duration * pixelsPerSecond * 0.3; // Shrink by 70%
+        const noteWidth = note.duration * pixelsPerSecond;
         const noteY = (midiData.maxPitch - note.midi) * noteHeight;
 
         // Calculate fade factor (0 = grey, 1 = full color)
