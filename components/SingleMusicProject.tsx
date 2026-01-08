@@ -87,6 +87,23 @@ export const SingleMusicProject = ({ project, onAudioElement }: SingleMusicProje
                     {tag}
                   </span>
                 ))}
+                {/* MIDI track instrument tags with colored circles */}
+                {project.midiTracks?.map((track, index) => (
+                  track.label && (
+                    <span
+                      key={`midi-${index}`}
+                      className="px-3 py-1 bg-white/10 rounded-full text-xs flex items-center gap-1.5"
+                    >
+                      <div
+                        className="w-2 h-2 rounded-full flex-shrink-0"
+                        style={{ backgroundColor: track.color }}
+                      />
+                      <span style={{ color: track.color }}>
+                        {track.label}
+                      </span>
+                    </span>
+                  )
+                ))}
               </div>
 
               {/* Audio Player - Full Width, Custom Layout */}
