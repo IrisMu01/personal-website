@@ -2,6 +2,7 @@ import { MusicProject } from "@/data/projects";
 import AudioPlayer from "react-h5-audio-player";
 import { useEffect, useRef, useState } from "react";
 import { AudioSpectrum } from "./ui/audio-spectrum";
+import { MidiPianoRoll } from "./ui/midi-piano-roll";
 import "react-h5-audio-player/lib/styles.css";
 
 interface SingleMusicProjectProps {
@@ -12,6 +13,7 @@ interface SingleMusicProjectProps {
 export const SingleMusicProject = ({ project, onAudioElement }: SingleMusicProjectProps) => {
   const playerRef = useRef<AudioPlayer>(null);
   const [audioElement, setAudioElement] = useState<HTMLAudioElement | null>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
 
   useEffect(() => {
     // Get the actual audio element from the player and pass it to the callback
@@ -19,6 +21,18 @@ export const SingleMusicProject = ({ project, onAudioElement }: SingleMusicProje
       const element = playerRef.current.audio.current;
       setAudioElement(element);
       onAudioElement?.(element);
+
+      // Track play/pause state
+      const handlePlay = () => setIsPlaying(true);
+      const handlePause = () => setIsPlaying(false);
+
+      element.addEventListener("play", handlePlay);
+      element.addEventListener("pause", handlePause);
+
+      return () => {
+        element.removeEventListener("play", handlePlay);
+        element.removeEventListener("pause", handlePause);
+      };
     }
 
     // Cleanup: set to null when component unmounts or project changes
@@ -30,6 +44,12 @@ export const SingleMusicProject = ({ project, onAudioElement }: SingleMusicProje
 
     return (
       <>
+        {/* Black overlay - fades in/out with music */}
+        <div
+          className="fixed inset-0 bg-black pointer-events-none transition-opacity duration-700 -z-10"
+          style={{ opacity: isPlaying ? (project.overlayOpacity ?? 0.6) : 0 }}
+        />
+
         {/* Content section - h-screen */}
         <div className="h-screen w-full flex flex-col pointer-events-none">
           {/* Spacer for top credentials section */}
@@ -38,6 +58,20 @@ export const SingleMusicProject = ({ project, onAudioElement }: SingleMusicProje
           {/* Centered content area */}
           <div className="flex-1 flex items-center justify-center">
             <div className="w-full pointer-events-auto pb-20">
+              {/* MIDI Piano Roll - positioned at top, fades in/out with music */}
+              {project.midiTracks && (
+                <MidiPianoRoll
+                  midiTracks={project.midiTracks}
+                  audioElement={audioElement}
+                  isPlaying={isPlaying}
+                  opacity={isPlaying ? 1 : 0}
+                  cornerRadius={project.noteCornerRadius}
+                  noteMargin={project.noteMargin}
+                  maxNoteHeight={project.noteMaxHeight}
+                  anticipatoryGlow={project.anticipatoryGlow}
+                />
+              )}
+
               {/* Title left-aligned, smaller font */}
               <div className="mb-4 px-8">
                 <h2 className="text-2xl font-bold text-purple-100">{project.title}</h2>
@@ -52,6 +86,23 @@ export const SingleMusicProject = ({ project, onAudioElement }: SingleMusicProje
                   >
                     {tag}
                   </span>
+                ))}
+                {/* MIDI track instrument tags with colored circles */}
+                {project.midiTracks?.map((track, index) => (
+                  track.label && (
+                    <span
+                      key={`midi-${index}`}
+                      className="px-3 py-1 bg-white/10 rounded-full text-xs flex items-center gap-1.5"
+                    >
+                      <div
+                        className="w-2 h-2 rounded-full flex-shrink-0"
+                        style={{ backgroundColor: track.color }}
+                      />
+                      <span style={{ color: track.color }}>
+                        {track.label}
+                      </span>
+                    </span>
+                  )
                 ))}
               </div>
 

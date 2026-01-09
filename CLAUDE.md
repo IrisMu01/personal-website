@@ -11,6 +11,7 @@ This is a personal portfolio website for Iris Mu, showcasing both Computer Scien
 - **Project selector**: Bottom-aligned navigation for quick project access and tab switching
 - **Visual effects**: Fluid particle simulation with theme-reactive colors (blue/cyan for CS, purple/magenta for Music)
 - **Audio spectrum visualizer**: Real-time horizontal frequency spectrum with responsive bar widths
+- **MIDI piano roll**: WebGL-based auto-scrolling MIDI visualizer with gradient note transitions and multi-track color support
 - **Audio playback**: Custom full-width audio player with auto-pause when scrolling away
 - **Responsive design**: All components adapt to screen size
 
@@ -30,6 +31,8 @@ This is a personal portfolio website for Iris Mu, showcasing both Computer Scien
 
 ### Additional Dependencies
 - **react-h5-audio-player**: Audio playback component
+- **pixi.js 8.x**: WebGL rendering for MIDI visualizer
+- **@tonejs/midi**: MIDI file parsing
 - **embla-carousel-react**: Carousel functionality
 - **class-variance-authority (CVA)**: Component variant management
 - **tailwind-merge**: Tailwind class merging utility
@@ -66,8 +69,12 @@ This is a personal portfolio website for Iris Mu, showcasing both Computer Scien
 │       ├── particles.tsx         # Custom particle background
 │       ├── fluid-particles.tsx   # Navier-Stokes fluid simulation background
 │       ├── audio-spectrum.tsx    # Horizontal audio spectrum visualizer
+│       ├── midi-piano-roll.tsx   # PixiJS MIDI visualizer with gradient fades
 │       ├── skeleton.tsx
 │       └── ...
+│
+├── hooks/
+│   └── useMidiData.ts        # Fetch and parse MIDI files from R2
 │
 ├── data/
 │   └── projects.ts           # CS and Music project data with metadata

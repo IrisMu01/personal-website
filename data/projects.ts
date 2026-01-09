@@ -6,12 +6,28 @@ export interface CSProject {
   videoUrl?: string;
 }
 
+export interface MidiTrack {
+  url: string;           // R2 URL to .mid file
+  color: string;         // hex color (e.g., "#A0B0FF", "#D0C0FF")
+  label?: string;        // optional: "Strings", "Brass", etc.
+}
+
 export interface MusicProject {
   id: string;
   title: string;
   tags: string[];
   imageUrl: string;
   audioUrl: string;
+
+  // MIDI visualization (optional)
+  midiTracks?: MidiTrack[];
+
+  // Visual customization (optional, per-project overrides)
+  overlayOpacity?: number;        // default: 0.6
+  noteCornerRadius?: number;      // default: 2 (px)
+  noteMargin?: number;            // default: 1 (px)
+  noteMaxHeight?: number;         // default: 4 (px, including margin)
+  anticipatoryGlow?: number;      // default: 0.1 (fade-in/fade-out duration in seconds)
 }
 
 export const csProjects: CSProject[] = [
@@ -31,7 +47,8 @@ export const csProjects: CSProject[] = [
     title: "Personal Website",
     tags: ["Claude Code", "WebGL",  "React"],
     description: [
-      "Developed an interactive static website featuring custom WebGL implementations including a Navier-Stokes fluid particle simulation and real-time spectrum audio visualizers.",
+      "Developed an interactive static website featuring custom WebGL implementations including a Navier-Stokes fluid particle simulation for background.",
+      "Added audio frequency spectrum visualizer and multi-color MIDI visualizer for music project aesthetics.",
       "Leveraged Figma Make for initial design prototyping, then utilized Claude Code for rapid iteration and refinement across multiple design variations.",
     ],
   },
@@ -44,6 +61,14 @@ export const musicProjects: MusicProject[] = [
     tags: ["Hybrid Orchestral", "Cinematic"],
     imageUrl: "https://images.unsplash.com/photo-1507838153414-b4b713384a76?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400",
     audioUrl: "https://pub-18848117928e4ff497abec0a1725d007.r2.dev/piece_1.wav",
+    midiTracks: [
+        { url: "https://pub-18848117928e4ff497abec0a1725d007.r2.dev/midis/piece_1_brasses.mid", color: "#EEB0FF", label: "Brasses" },
+        { url: "https://pub-18848117928e4ff497abec0a1725d007.r2.dev/midis/piece_1_others.mid", color: "#B0F2FF", label: "Others" },
+        { url: "https://pub-18848117928e4ff497abec0a1725d007.r2.dev/midis/piece_1_strings.mid", color: "#B0C5FF", label: "Strings" },
+        { url: "https://pub-18848117928e4ff497abec0a1725d007.r2.dev/midis/piece_1_synth_basses.mid", color: "#C0A5FF", label: "Synth Basses" },
+        { url: "https://pub-18848117928e4ff497abec0a1725d007.r2.dev/midis/piece_1_woodwinds.mid", color: "#A0B5FF", label: "Woodwinds" },
+    ],
+    anticipatoryGlow: 0.1
   },
   {
     id: "music2",
