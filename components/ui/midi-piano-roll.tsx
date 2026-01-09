@@ -108,7 +108,7 @@ export function MidiPianoRoll({
 
       // Calculate viewport: align current notes to left with 150px for past notes
       const pastNotesPx = 150; // pixels reserved for past notes
-      const viewportDuration = window.innerWidth < 768 ? 33 : 50; // Show more time = compress notes
+      const viewportDuration = window.innerWidth < 768 ? 15 : 25; // Show more time = compress notes
       const pixelsPerSecond = canvas.width / viewportDuration;
       const pastDuration = pastNotesPx / pixelsPerSecond;
 
